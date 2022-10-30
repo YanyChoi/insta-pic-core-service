@@ -1,11 +1,7 @@
 package com.instantpic.coreservice.controller;
 
-import com.instantpic.coreservice.dto.UserDto;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
+import com.instantpic.coreservice.dto.user.UserDto;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
@@ -21,4 +17,10 @@ public class UserController {
         return true;
     }
 
+    @PostMapping("/signup")
+    public UserDto signUp(@RequestBody UserDto userDraft) {
+
+
+        return userDraft;
+    }
 }

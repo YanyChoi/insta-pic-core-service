@@ -1,4 +1,4 @@
-package com.instantpic.coreservice.dto;
+package com.instantpic.coreservice.dto.comment;
 
 import java.time.LocalDateTime;
 

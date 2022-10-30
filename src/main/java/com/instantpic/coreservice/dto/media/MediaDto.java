@@ -1,4 +1,4 @@
-package com.instantpic.coreservice.dto;
+package com.instantpic.coreservice.dto.media;
 
 public class MediaDto {
     private int mediaId;

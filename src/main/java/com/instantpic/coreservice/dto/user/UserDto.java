@@ -1,4 +1,4 @@
-package com.instantpic.coreservice.dto;
+package com.instantpic.coreservice.dto.user;
 
 public class UserDto {
     private String userId;
