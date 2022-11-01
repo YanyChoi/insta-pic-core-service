@@ -4,7 +4,9 @@ import com.instantpic.coreservice.dto.user.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
@@ -35,6 +37,20 @@ public class UserRepository {
     public List<UserDto> readUsers() {
         List<UserDto> result = jdbcTemplate.query("SELECT * FROM instapic.user;", userDtoRowMapper());
         return result;
+    }
+
+    @Transactional
+    public boolean createUser(UserDto user) {
+        try {
+            jdbcTemplate.update(
+                    "INSERT INTO instapic.user (user_id, pw, name, profile_pic, introduction, url) VALUES (?, ?, ?, ?, ?, ?);",
+                    user.getUserId(), user.getPw(), user.getName(), user.getProfilePic(), user.getIntroduction(), user.getUrl()
+            );
+            return true;
+        }
+        catch (Exception e) {
+            return false;
+        }
     }
 
 

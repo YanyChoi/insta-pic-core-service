@@ -26,14 +26,14 @@ public class UserController {
     }
 
     @GetMapping("/logout")
-    public Boolean logout(String JWT) {
+    public Boolean logout(String id, String pw) {
         return true;
     }
 
     @PostMapping("/signup")
     public UserDto signUp(@RequestBody UserDto userDraft) {
 
-
-        return userDraft;
+        UserDto user = userService.signupService(userDraft);
+        return user;
     }
 }
