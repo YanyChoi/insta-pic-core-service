@@ -1,31 +1,30 @@
 package com.instantpic.coreservice.dto.comment;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.OptionalInt;
 
 public class CommentDto {
     private int commentId;
     private int articleId;
     private String userId;
+    private int mentioned_id;
     private String text;
-    private LocalDateTime date;
-    private int parentCommentId;
+    private String date;
+    private List<CommentDto> childComments;
+    private int childCount;
+    private OptionalInt parentCommentId;
 
     public CommentDto() {
         commentId = 0;
         articleId = 0;
         userId = "";
+        mentioned_id = 0;
         text = "";
-        date = LocalDateTime.now();
-        parentCommentId = 0;
-    }
-
-    public CommentDto(int commentId, int articleId, String userId, String text, LocalDateTime date, int parentCommentId) {
-        this.commentId = commentId;
-        this.articleId = articleId;
-        this.userId = userId;
-        this.text = text;
-        this.date = date;
-        this.parentCommentId = parentCommentId;
+        date = "";
+        parentCommentId = null;
+        childComments = new ArrayList<CommentDto>();
+        childCount = 0;
     }
 
     public int getCommentId() {
@@ -52,6 +51,14 @@ public class CommentDto {
         this.userId = userId;
     }
 
+    public int getMentioned_id() {
+        return mentioned_id;
+    }
+
+    public void setMentioned_id(int mentioned_id) {
+        this.mentioned_id = mentioned_id;
+    }
+
     public String getText() {
         return text;
     }
@@ -60,20 +67,36 @@ public class CommentDto {
         this.text = text;
     }
 
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
-    public int getParentCommentId() {
+    public OptionalInt getParentCommentId() {
         return parentCommentId;
     }
 
-    public void setParentCommentId(int parentCommentId) {
+    public void setParentCommentId(OptionalInt parentCommentId) {
         this.parentCommentId = parentCommentId;
+    }
+
+    public List<CommentDto> getChildComments() {
+        return childComments;
+    }
+
+    public void setChildComments(List<CommentDto> childComments) {
+        this.childComments = childComments;
+    }
+
+    public int getChildCount() {
+        return childCount;
+    }
+
+    public void setChildCount(int childCount) {
+        this.childCount = childCount;
     }
 }
 
