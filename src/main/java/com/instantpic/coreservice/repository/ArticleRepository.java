@@ -24,9 +24,9 @@ public class ArticleRepository {
     }
 
     public Optional<ArticleDto> postArticle(ArticleDto article) {
-        jdbcTemplate.update("INSERT INTO instapic.article (date, location, text, user_id) VALUES (?, ?, ?, ?);",
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")), article.getLocation(), article.getText(), article.getUserId());
-        List<ArticleDto> result = jdbcTemplate.query("SELECT * FROM instapic.article WHERE user_id = ? ORDER BY date DESC;", articleDtoRowMapper(), article.getUserId());
+        jdbcTemplate.update("INSERT INTO instapic.article (location, text, user_id) VALUES (?, ?, ?);",
+                article.getLocation(), article.getText(), article.getUserId());
+        List<ArticleDto> result = jdbcTemplate.query("SELECT * FROM instapic.article WHERE user_id = ? ORDER BY datetime DESC;", articleDtoRowMapper(), article.getUserId());
         return result.stream().findAny();
     }
 
@@ -56,7 +56,7 @@ public class ArticleRepository {
         return (rs, rowNum) -> {
             ArticleDto article = new ArticleDto();
             article.setArticleId(rs.getInt("article_id"));
-            article.setDate(rs.getString("date"));
+            article.setDate(rs.getString("datetime"));
             article.setLocation(rs.getString("location"));
             article.setText(rs.getString("text"));
             article.setUserId(rs.getString("user_id"));

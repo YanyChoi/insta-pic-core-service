@@ -18,6 +18,10 @@ public class CommentService {
 
     public CommentDto postComment(CommentDto comment) {
         CommentDto result = commentRepository.postComment(comment).get();
+        if (comment.getMentionedId() != null && !comment.getMentionedId().isEmpty()) {
+            CommentDto mention = commentRepository.postCommentMention(result.getCommentId(), comment.getMentionedId()).get();
+            result.setMentionedId(mention.getMentionedId());
+        }
         return result;
     }
 
