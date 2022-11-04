@@ -1,24 +1,25 @@
 package com.instantpic.coreservice.dto.article;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 public class ArticleDto {
     private int articleId;
-    private LocalDateTime date;
+    private String date;
     private String location;
     private String text;
     private String userId;
 
     public ArticleDto() {
         articleId = 0;
-        date = LocalDateTime.now();
+        date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
         location = "";
         text = "";
         userId = "";
     }
 
-    public ArticleDto(int articleId, LocalDateTime date, String location, String text, String userId) {
+    public ArticleDto(int articleId, String date, String location, String text, String userId) {
         this.articleId = articleId;
         this.date = date;
         this.location = location;
@@ -34,11 +35,11 @@ public class ArticleDto {
         this.articleId = articleId;
     }
 
-    public LocalDateTime getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(LocalDateTime date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
