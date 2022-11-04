@@ -33,16 +33,12 @@ public class ArticleRepository {
     public ArticleList getArticleListByUserId(String userId) {
         ArticleList articleList = new ArticleList();
         articleList.setArticleList(jdbcTemplate.query("SELECT * FROM instapic.article WHERE user_id = ?;", articleDtoRowMapper(), userId));
-        articleList.setCount(articleList.getArticleList().size());
-
         return articleList;
     }
 
     public ArticleList getArticleListByLocation(String location) {
         ArticleList articleList = new ArticleList();
         articleList.setArticleList(jdbcTemplate.query("SELECT * FROM instapic.article WHERE location = ?;", articleDtoRowMapper(), location));
-        articleList.setCount(articleList.getArticleList().size());
-
         return articleList;
     }
 
@@ -60,7 +56,7 @@ public class ArticleRepository {
         return (rs, rowNum) -> {
             ArticleDto article = new ArticleDto();
             article.setArticleId(rs.getInt("article_id"));
-//            article.setDate(Locars.getString("date"));
+            article.setDate(rs.getString("date"));
             article.setLocation(rs.getString("location"));
             article.setText(rs.getString("text"));
             article.setUserId(rs.getString("user_id"));

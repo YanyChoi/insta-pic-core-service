@@ -23,11 +23,13 @@ public class ArticleService {
 
     public ArticleList getArticleListByUserId(String userId) {
         ArticleList articleList = articleRepository.getArticleListByUserId(userId);
+        articleList.setCount(articleList.getArticleList().size());
         return articleList;
     }
 
     public ArticleList getArticleListByLocation(String location) {
         ArticleList articleList = articleRepository.getArticleListByLocation(location);
+        articleList.setCount(articleList.getArticleList().size());
         return articleList;
     }
 

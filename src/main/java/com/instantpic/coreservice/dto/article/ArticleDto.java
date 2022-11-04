@@ -6,14 +6,14 @@ import java.util.Date;
 
 public class ArticleDto {
     private int articleId;
-    private String date;
+    private String userId;
     private String location;
     private String text;
-    private String userId;
+    private String date;
 
     public ArticleDto() {
         articleId = 0;
-        date = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        date = "0000-00-00 00:00:00";
         location = "";
         text = "";
         userId = "";
