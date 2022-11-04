@@ -2,38 +2,44 @@ package com.instantpic.coreservice.controller;
 
 import com.instantpic.coreservice.dto.follow.FollowDto;
 import com.instantpic.coreservice.dto.follow.FollowList;
+import com.instantpic.coreservice.dto.follow.NeighborList;
+import com.instantpic.coreservice.service.FollowService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/follow")
 public class FollowController {
+
+    private FollowService followService;
+    @Autowired
+    public FollowController(FollowService followService) {
+        this.followService = followService;
+    }
     @PostMapping
     public FollowDto follow(String userId, String followId) {
-
-        return new FollowDto();
+        FollowDto result = followService.follow(userId, followId);
+        return result;
     }
     @DeleteMapping
     public FollowDto unfollow(String userId, String followId) {
-
-        return new FollowDto();
+        FollowDto result = followService.unfollow(userId, followId);
+        return result;
     }
-    @GetMapping
-    public FollowList getFollow(String userId, String requestType) {
-        FollowList result = new FollowList();
-        switch (requestType) {
-            case "followers":
 
-                break;
-            case "following":
-
-                break;
-            case "neighbors":
-
-                break;
-        }
+    @GetMapping("/followers")
+    public FollowList getFollowers(String followingId) {
+        FollowList result = followService.getFollowers(followingId);
+        return result;
+    }
+    @GetMapping("/following")
+    public FollowList getFollowing(String userId) {
+        FollowList result = followService.getFollowing(userId);
+        return result;
+    }
+    @GetMapping("/neighbors")
+    public NeighborList getNeighbors(String userId, String followingId) {
+        NeighborList result = followService.getNeighbors(userId, followingId);
         return result;
     }
 }
