@@ -7,8 +7,6 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.OptionalInt;
@@ -24,10 +22,15 @@ public class CommentRepository {
     }
 
     public Optional<CommentDto> postComment(CommentDto comment) {
-        String time = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-        jdbcTemplate.update("INSERT INTO instapic.comment (article_id, user_id, text, time, parent_comment_id) VALUES (?, ?, ?, ?, ?);",
-                comment.getArticleId(), comment.getUserId(), comment.getText(), time, comment.getParentCommentId());
-        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE article_id = ? AND user_id = ? AND time = ?;", commentDtoRowMapper(), comment.getArticleId(), comment.getUserId(), time);
+        jdbcTemplate.update("INSERT INTO instapic.comment (article_id, user_id, text, parent_comment_id) VALUES (?, ?, ?, ?);",
+                comment.getArticleId(), comment.getUserId(), comment.getText(), comment.getParentCommentId());
+        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE article_id = ? AND user_id = ? ORDER BY comment_id DESC;", commentDtoRowMapper(), comment.getArticleId(), comment.getUserId());
+        return result.stream().findAny();
+    }
+
+    public Optional<CommentDto> postCommentMention(int commentId, String mentionedId) {
+        jdbcTemplate.update("INSERT INTO instapic.comment_mention (comment_id, user_id) VALUES (?, ?);", commentId, mentionedId);
+        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment_mention WHERE comment_id = ? AND user_id = ?", commentMentionMapper(), commentId, mentionedId);
         return result.stream().findAny();
     }
 
@@ -54,8 +57,17 @@ public class CommentRepository {
             comment.setArticleId(rs.getInt("article_id"));
             comment.setUserId(rs.getString("user_id"));
             comment.setText(rs.getString("text"));
-            comment.setDate(rs.getString("time"));
-            comment.setParentCommentId(OptionalInt.of(rs.getInt("parent_comment_id")));
+            comment.setDatetime(rs.getString("datetime"));
+            comment.setParentCommentId(rs.getInt("parent_comment_id"));
+            return comment;
+        };
+    }
+
+    private RowMapper<CommentDto> commentMentionMapper() {
+        return (rs, rowNum) -> {
+            CommentDto comment = new CommentDto();
+            comment.setCommentId(rs.getInt("comment_id"));
+            comment.setMentionedId(rs.getString("user_id"));
             return comment;
         };
     }

@@ -8,21 +8,21 @@ public class CommentDto {
     private int commentId;
     private int articleId;
     private String userId;
-    private int mentioned_id;
+    private String mentionedId;
     private String text;
-    private String date;
+    private String datetime;
     private List<CommentDto> childComments;
     private int childCount;
-    private OptionalInt parentCommentId;
+    private int parentCommentId;
 
     public CommentDto() {
         commentId = 0;
         articleId = 0;
         userId = "";
-        mentioned_id = 0;
+        mentionedId = null;
         text = "";
-        date = "";
-        parentCommentId = null;
+        datetime = "";
+        parentCommentId = 0;
         childComments = new ArrayList<CommentDto>();
         childCount = 0;
     }
@@ -51,12 +51,12 @@ public class CommentDto {
         this.userId = userId;
     }
 
-    public int getMentioned_id() {
-        return mentioned_id;
+    public String getMentionedId() {
+        return mentionedId;
     }
 
-    public void setMentioned_id(int mentioned_id) {
-        this.mentioned_id = mentioned_id;
+    public void setMentionedId(String mentionedId) {
+        this.mentionedId = mentionedId;
     }
 
     public String getText() {
@@ -67,19 +67,19 @@ public class CommentDto {
         this.text = text;
     }
 
-    public String getDate() {
-        return date;
+    public String getDatetime() {
+        return datetime;
     }
 
-    public void setDate(String date) {
-        this.date = date;
+    public void setDatetime(String datetime) {
+        this.datetime = datetime;
     }
 
-    public OptionalInt getParentCommentId() {
+    public int getParentCommentId() {
         return parentCommentId;
     }
 
-    public void setParentCommentId(OptionalInt parentCommentId) {
+    public void setParentCommentId(int parentCommentId) {
         this.parentCommentId = parentCommentId;
     }
 
