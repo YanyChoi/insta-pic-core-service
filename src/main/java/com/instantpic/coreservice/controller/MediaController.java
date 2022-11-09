@@ -15,19 +15,19 @@ public class MediaController {
         this.mediaService = mediaService;
     }
 
-    @PostMapping ("/mediaUpload")
+    @PostMapping ("/media")
     public MediaDto mediaUpload(@RequestBody MediaDto mediaDraft){
         MediaDto media = mediaService.mediaUploadService(mediaDraft);
         return media;
     }
 
-    @GetMapping("/mediaShow")
+    @GetMapping("/media")
     public MediaDto mediaShow(int articleId){
         MediaDto media = mediaService.mediaShowService(articleId);
         return media;
     }
 
-    @PutMapping("/mediaDelete")
+    @DeleteMapping("/media")
     public MediaDto mediaDelete(int articleId, int mediaId, String url){
         MediaDto media = mediaService.mediaDeleteService(articleId, mediaId, url);
         return media;

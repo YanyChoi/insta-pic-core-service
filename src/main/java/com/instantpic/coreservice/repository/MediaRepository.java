@@ -7,6 +7,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.print.attribute.standard.Media;
 import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
@@ -23,8 +24,8 @@ public class MediaRepository {
         return result.stream().findAny();
     }
 
-    public Optional<MediaDto> readMediaByAll(int articleId, int mediaId, String url){
-        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ? AND media_id = ? AND url = ?", mediaDtoRowMapper(), articleId, mediaId, url);
+    public Optional<MediaDto> deleteMedia(int articleId, int mediaId, String url){
+        List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media (media_id, url) WHERE article_id = ? AND media_id = ? AND url =?", mediaDtoRowMapper(), articleId, mediaId, url);
         return result.stream().findAny();
     }
 

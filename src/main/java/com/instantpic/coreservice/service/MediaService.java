@@ -20,7 +20,7 @@ public class MediaService {
 
     public MediaDto mediaDeleteService(int articleId, int mediaId, String url){
         MediaDto result;
-        result = mediaRepository.readMediaByAll(articleId, mediaId, url).get();
+        result = mediaRepository.deleteMedia(articleId, mediaId, url).get();
         return result;
     }
 
