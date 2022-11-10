@@ -31,8 +31,8 @@ public class MediaController {
 
     //media 하나만 삭제
     @DeleteMapping("/media")
-    public MediaDto mediaSeperateDelete(int articleId, int mediaId){
-        MediaDto media = mediaService.mediaSeperateDeleteService(articleId, mediaId);
+    public MediaDto mediaSeparateDelete(int articleId, int mediaId){
+        MediaDto media = mediaService.mediaSeparateDeleteService(articleId, mediaId);
         return media;
     }
 

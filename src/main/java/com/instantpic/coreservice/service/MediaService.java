@@ -21,9 +21,9 @@ public class MediaService {
         return result;
     }
 
-    public MediaDto mediaSeperateDeleteService(int articleId, int mediaId){
+    public MediaDto mediaSeparateDeleteService(int articleId, int mediaId){
         MediaDto result;
-        result = mediaRepository.deleteSeperateMedia(articleId, mediaId).get();
+        result = mediaRepository.deleteSeparateMedia(articleId, mediaId).get();
         return result;
     }
 

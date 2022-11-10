@@ -24,7 +24,7 @@ public class MediaRepository {
         return result.stream().findAny();
     }
 
-    public Optional<MediaDto> deleteSeperateMedia(int articleId, int mediaId){
+    public Optional<MediaDto> deleteSeparateMedia(int articleId, int mediaId){
         List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media WHERE article_id = ? OR media_id = ?", mediaDtoRowMapper(), articleId, mediaId);
         return result.stream().findAny();
     }
