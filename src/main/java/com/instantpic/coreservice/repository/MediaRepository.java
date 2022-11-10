@@ -24,8 +24,13 @@ public class MediaRepository {
         return result.stream().findAny();
     }
 
-    public Optional<MediaDto> deleteMedia(int articleId, int mediaId, String url){
-        List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media (media_id, url) WHERE article_id = ? AND media_id = ? AND url =?", mediaDtoRowMapper(), articleId, mediaId, url);
+    public Optional<MediaDto> deleteSeperateMedia(int articleId, int mediaId){
+        List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media WHERE article_id = ? OR media_id = ?", mediaDtoRowMapper(), articleId, mediaId);
+        return result.stream().findAny();
+    }
+
+    public Optional<MediaDto> deleteAllMedia(int articleId){
+        List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
         return result.stream().findAny();
     }
 
@@ -33,7 +38,7 @@ public class MediaRepository {
     public boolean uploadMedia(MediaDto media){
         try{
             jdbcTemplate.update(
-                    "INSERT INTO instapic.media (url) VALUES (?);",
+                    "INSERT INTO instapic.media (url, article_id) VALUES (?, ?);",
                     media.getUrl()
             );
             return true;

@@ -5,6 +5,8 @@ import com.instantpic.coreservice.service.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/media")
 public class MediaController {
@@ -22,14 +24,22 @@ public class MediaController {
     }
 
     @GetMapping("/media")
-    public MediaDto mediaShow(int articleId){
-        MediaDto media = mediaService.mediaShowService(articleId);
+    public List<MediaDto> mediaShow(int articleId){
+        List<MediaDto> media = mediaService.mediaShowService(articleId);
         return media;
     }
 
+    //media 하나만 삭제
     @DeleteMapping("/media")
-    public MediaDto mediaDelete(int articleId, int mediaId, String url){
-        MediaDto media = mediaService.mediaDeleteService(articleId, mediaId, url);
+    public MediaDto mediaSeperateDelete(int articleId, int mediaId){
+        MediaDto media = mediaService.mediaSeperateDeleteService(articleId, mediaId);
+        return media;
+    }
+
+    //해당 article 포함 media 전체삭제
+    @DeleteMapping("/media")
+    public MediaDto mediaALlDelete(int articleId){
+        MediaDto media = mediaService.mediaAllDeleteService(articleId);
         return media;
     }
 }
