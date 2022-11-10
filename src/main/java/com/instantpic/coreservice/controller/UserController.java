@@ -37,4 +37,11 @@ public class UserController {
         UserDto user = userService.signupService(userDraft);
         return user;
     }
+
+    @PutMapping("/change-pw")
+    public UserDto changePw(String id, String oldPw, String newPw) {
+
+        UserDto user = userService.changePwService(id, oldPw, newPw);
+        return user;
+    }
 }

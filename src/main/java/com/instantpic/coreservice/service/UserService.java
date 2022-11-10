@@ -37,4 +37,17 @@ public class UserService {
         return result;
     }
 
+    public UserDto changePwService(String id, String oldPw, String newPw)
+    {
+        UserDto user;
+
+        if (userRepository.readUserByIdAndPw(id, oldPw).isPresent()) {
+            user = userRepository.updateUserPw(id, newPw).get();
+        }
+        else {
+            user = new UserDto();
+        }
+
+        return user;
+    }
 }
