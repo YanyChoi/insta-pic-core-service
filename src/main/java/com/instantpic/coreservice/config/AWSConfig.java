@@ -23,7 +23,7 @@ public class AWSConfig {
 
     {
         try {
-            propsInput = new FileInputStream("resources/aws.properties");
+            propsInput = new FileInputStream("src/main/resources/aws.properties");
             Properties prop = new Properties();
             prop.load(propsInput);
             iamAccessKey = prop.getProperty("aws_access_key_id"); // IAM Access Key
