@@ -13,3 +13,11 @@ tasks:
     cmds:
       - sudo systemctl start core.service
       - sudo systemctl status core.service
+  
+  status:
+    cmds:
+      - sudo systemctl status core.service
+  stop:
+    cmds:
+      - sudo systemctl stop core.service
+  
