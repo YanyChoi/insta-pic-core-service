@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class ArticleRepository {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    @Transactional
     public Optional<ArticleDto> postArticle(ArticleDto article) {
         jdbcTemplate.update("INSERT INTO instapic.article (location, text, user_id) VALUES (?, ?, ?);",
                 article.getLocation(), article.getText(), article.getUserId());
@@ -47,6 +49,7 @@ public class ArticleRepository {
         return result.stream().findAny();
     }
 
+    @Transactional
     public Optional<ArticleDto> deleteArticle(int articleId) {
         List<ArticleDto> result = jdbcTemplate.query("SELECT * FROM instapic.article WHERE article_id = ?;", articleDtoRowMapper(), articleId);
         jdbcTemplate.update("DELETE FROM instapic.article WHERE article_id = ?", articleId);

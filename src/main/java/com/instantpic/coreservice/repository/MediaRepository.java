@@ -20,24 +20,6 @@ public class MediaRepository {
 
     @Autowired
     public MediaRepository(DataSource dataSource) { jdbcTemplate = new JdbcTemplate(dataSource); }
-
-    public List<MediaDto> readMediaByArticleId(int articleId){
-        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
-        return result;
-    }
-
-    public List<MediaDto> deleteSeparateMedia(int mediaId){
-        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE media_id = ?", mediaDtoRowMapper(), mediaId);
-        jdbcTemplate.update("DELETE FROM instapic.media WHERE media_id = ?", mediaId);
-        return result;
-    }
-
-    public List<MediaDto> deleteAllMedia(int articleId){
-        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
-        jdbcTemplate.update("DELETE FROM instapic.media WHERE article_id = ?", articleId);
-        return result;
-    }
-
     @Transactional
     public boolean uploadMedia(List<String> mediaUrls, int articleId){
         try {
@@ -52,6 +34,24 @@ public class MediaRepository {
         }catch (Exception e){
             return false;
         }
+    }
+    public List<MediaDto> readMediaByArticleId(int articleId){
+        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
+        return result;
+    }
+
+    @Transactional
+    public List<MediaDto> deleteSeparateMedia(int mediaId){
+        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE media_id = ?", mediaDtoRowMapper(), mediaId);
+        jdbcTemplate.update("DELETE FROM instapic.media WHERE media_id = ?", mediaId);
+        return result;
+    }
+
+    @Transactional
+    public List<MediaDto> deleteAllMedia(int articleId){
+        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
+        jdbcTemplate.update("DELETE FROM instapic.media WHERE article_id = ?", articleId);
+        return result;
     }
 
     private RowMapper<MediaDto> mediaDtoRowMapper(){

@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
 import java.util.List;
@@ -21,6 +22,7 @@ public class CommentRepository {
         jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
+    @Transactional
     public Optional<CommentDto> postComment(CommentDto comment) {
         jdbcTemplate.update("INSERT INTO instapic.comment (article_id, user_id, text, parent_comment_id) VALUES (?, ?, ?, ?);",
                 comment.getArticleId(), comment.getUserId(), comment.getText(), comment.getParentCommentId());
@@ -28,12 +30,14 @@ public class CommentRepository {
         return result.stream().findAny();
     }
 
+    @Transactional
     public Optional<CommentDto> postCommentMention(int commentId, String mentionedId) {
         jdbcTemplate.update("INSERT INTO instapic.comment_mention (comment_id, user_id) VALUES (?, ?);", commentId, mentionedId);
         List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment_mention WHERE comment_id = ? AND user_id = ?", commentMentionMapper(), commentId, mentionedId);
         return result.stream().findAny();
     }
 
+    @Transactional
     public Optional<CommentDto> deleteCommentById(int commentId) {
         List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE comment_id = ?;", commentDtoRowMapper(), commentId);
         jdbcTemplate.update("DELETE FROM instapic.comment WHERE comment_id = ?", commentId);
