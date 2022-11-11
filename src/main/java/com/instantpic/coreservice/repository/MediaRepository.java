@@ -26,10 +26,10 @@ public class MediaRepository {
         return result;
     }
 
-    public Optional<MediaDto> deleteSeperateMedia(int mediaId){
+    public List<MediaDto> deleteSeperateMedia(int mediaId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE media_id = ?", mediaDtoRowMapper(), mediaId);
         jdbcTemplate.update("DELETE FROM instapic.media WHERE media_id = ?", mediaId);
-        return result.stream().findAny();
+        return result;
     }
 
     public List<MediaDto> deleteAllMedia(int articleId){
@@ -43,7 +43,7 @@ public class MediaRepository {
         try{
             jdbcTemplate.update(
                     "INSERT INTO instapic.media (url, article_id) VALUES (?, ?);",
-                    media.getUrl()
+                    media.getUrl(), media.getArticleId()
             );
             return true;
         }catch (Exception e){

@@ -27,14 +27,16 @@ public class MediaService {
         return result;
     }
 
-    public MediaDto mediaDeleteService(int articleId, int mediaId){
-        MediaDto result;
+    public MediaList mediaDeleteService(int articleId, int mediaId){
+        MediaList result = new MediaList();
         if(articleId == NULL) {
-            result = mediaRepository.deleteSeperateMedia(mediaId).get();
+            result.setMedia(mediaRepository.deleteSeperateMedia(mediaId));
+            result.setCount(result.getMedia().size());
             return result;
         }
         else{
-            result = mediaRepository.deleteAllMedia(articleId);
+            result.setMedia(mediaRepository.deleteAllMedia(articleId));
+            result.setCount(result.getMedia().size());
             return result;
         }
     }
@@ -45,15 +47,13 @@ public class MediaService {
         return result;
     }*/
 
-    public MediaDto mediaUploadService(MediaDto media){
-        MediaDto result;
-        if (mediaRepository.uploadMedia(media)){
-            result = mediaRepository.readMediaByArticleId(media.getArticleId()).get();
+    public MediaList mediaUploadService(MediaDto media){
+        MediaList result = new MediaList();
+        boolean upload = mediaRepository.uploadMedia(media);
+        if (upload){
+            result.setMedia(mediaRepository.readMediaByArticleId(media.getArticleId()));
         }
-        else{
-            result = new MediaDto();
-            result.setUrl("Upload Fail");
-        }
+        result.setCount(result.getMedia().size());
         return result;
     }
 }

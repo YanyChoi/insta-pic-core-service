@@ -6,8 +6,6 @@ import com.instantpic.coreservice.service.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/media")
 public class MediaController {
@@ -19,8 +17,8 @@ public class MediaController {
     }
 
     @PostMapping ("/media")
-    public MediaDto mediaUpload(@RequestBody MediaDto mediaDraft){
-        MediaDto media = mediaService.mediaUploadService(mediaDraft);
+    public MediaList mediaUpload(@RequestBody MediaDto mediaDraft){
+        MediaList media = mediaService.mediaUploadService(mediaDraft);
         return media;
     }
 
@@ -32,8 +30,8 @@ public class MediaController {
 
 
     @DeleteMapping("/media")
-    public MediaDto mediaDelete(int articleId, int mediaId) {
-        MediaDto media = mediaService.mediaDeleteService(articleId, mediaId);
+    public MediaList mediaDelete(int articleId, int mediaId) {
+        MediaList media = mediaService.mediaDeleteService(articleId, mediaId);
         return media;
     }
 }
