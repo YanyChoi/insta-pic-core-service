@@ -34,6 +34,7 @@ public class UserRepository {
         return result.stream().findAny();
     }
 
+    @Transactional
     public Optional<UserDto> updateUserPw(String id, String pw) {
         jdbcTemplate.update("UPDATE instapic.user SET pw = ? WHERE user_id = ?", pw, id);
         List<UserDto> result = jdbcTemplate.query("SELECT * FROM instapic.user WHERE user_id = ? AND pw = ?", userDtoRowMapper(), id, pw);

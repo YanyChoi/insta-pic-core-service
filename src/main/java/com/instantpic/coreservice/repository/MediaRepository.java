@@ -20,35 +20,38 @@ public class MediaRepository {
 
     @Autowired
     public MediaRepository(DataSource dataSource) { jdbcTemplate = new JdbcTemplate(dataSource); }
+    @Transactional
+    public boolean uploadMedia(List<String> mediaUrls, int articleId){
+        try {
+            for (String url: mediaUrls) {
+                jdbcTemplate.update(
+                        "INSERT INTO instapic.media (url, article_id) VALUES (?, ?);",
+                        url, articleId
+                );
+            }
+            return true;
 
+        }catch (Exception e){
+            return false;
+        }
+    }
     public List<MediaDto> readMediaByArticleId(int articleId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
         return result;
     }
 
-    public List<MediaDto> deleteSeperateMedia(int mediaId){
+    @Transactional
+    public List<MediaDto> deleteSeparateMedia(int mediaId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE media_id = ?", mediaDtoRowMapper(), mediaId);
         jdbcTemplate.update("DELETE FROM instapic.media WHERE media_id = ?", mediaId);
         return result;
     }
 
+    @Transactional
     public List<MediaDto> deleteAllMedia(int articleId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
         jdbcTemplate.update("DELETE FROM instapic.media WHERE article_id = ?", articleId);
         return result;
-    }
-
-    @Transactional
-    public boolean uploadMedia(MediaDto media){
-        try{
-            jdbcTemplate.update(
-                    "INSERT INTO instapic.media (url, article_id) VALUES (?, ?);",
-                    media.getUrl(), media.getArticleId()
-            );
-            return true;
-        }catch (Exception e){
-            return false;
-        }
     }
 
     private RowMapper<MediaDto> mediaDtoRowMapper(){

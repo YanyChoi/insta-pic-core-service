@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.OptionalInt;
 
 import static java.sql.Types.NULL;
 
@@ -27,31 +29,22 @@ public class MediaService {
         return result;
     }
 
-    public MediaList mediaDeleteService(int articleId, int mediaId){
+    public MediaList mediaDeleteService(Optional<Integer> articleId, Optional<Integer> mediaId){
         MediaList result = new MediaList();
-        if(articleId == NULL) {
-            result.setMedia(mediaRepository.deleteSeperateMedia(mediaId));
-            result.setCount(result.getMedia().size());
-            return result;
+        if (articleId.isEmpty()) {
+            result.setMedia(mediaRepository.deleteSeparateMedia(mediaId.get().intValue()));
         }
-        else{
-            result.setMedia(mediaRepository.deleteAllMedia(articleId));
-            result.setCount(result.getMedia().size());
-            return result;
+        else {
+            result.setMedia(mediaRepository.deleteAllMedia(articleId.get().intValue()));
         }
-    }
-
-    /*public MediaDto mediaAllDeleteService(int articleId){
-        MediaDto result;
-        result = mediaRepository.deleteAllMedia(articleId).get();
+        result.setCount(result.getMedia().size());
         return result;
-    }*/
-
-    public MediaList mediaUploadService(MediaDto media){
+    }
+    public MediaList mediaUploadService(List<String> MediaUrls, int articleId){
         MediaList result = new MediaList();
-        boolean upload = mediaRepository.uploadMedia(media);
+        boolean upload = mediaRepository.uploadMedia(MediaUrls, articleId);
         if (upload){
-            result.setMedia(mediaRepository.readMediaByArticleId(media.getArticleId()));
+            result.setMedia(mediaRepository.readMediaByArticleId(articleId));
         }
         result.setCount(result.getMedia().size());
         return result;
