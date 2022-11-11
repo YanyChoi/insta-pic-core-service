@@ -33,6 +33,8 @@ public class MediaDto {
         this.articleId = articleId;
     }
 
+
+
     public String getUrl() {
         return url;
     }
