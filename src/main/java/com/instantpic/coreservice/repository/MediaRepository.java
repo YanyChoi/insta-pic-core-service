@@ -12,6 +12,8 @@ import javax.sql.DataSource;
 import java.util.List;
 import java.util.Optional;
 
+import static java.sql.Types.NULL;
+
 @Repository
 public class MediaRepository {
     private final JdbcTemplate jdbcTemplate;
@@ -19,19 +21,21 @@ public class MediaRepository {
     @Autowired
     public MediaRepository(DataSource dataSource) { jdbcTemplate = new JdbcTemplate(dataSource); }
 
-    public Optional<MediaDto> readMediaByArticleId(int articleId){
+    public List<MediaDto> readMediaByArticleId(int articleId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
+        return result;
+    }
+
+    public Optional<MediaDto> deleteSeperateMedia(int mediaId){
+        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE media_id = ?", mediaDtoRowMapper(), mediaId);
+        jdbcTemplate.update("DELETE FROM instapic.media WHERE media_id = ?", mediaId);
         return result.stream().findAny();
     }
 
-    public Optional<MediaDto> deleteSeparateMedia(int articleId, int mediaId){
-        List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media WHERE article_id = ? OR media_id = ?", mediaDtoRowMapper(), articleId, mediaId);
-        return result.stream().findAny();
-    }
-
-    public Optional<MediaDto> deleteAllMedia(int articleId){
-        List<MediaDto> result = jdbcTemplate.query("DELETE * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
-        return result.stream().findAny();
+    public List<MediaDto> deleteAllMedia(int articleId){
+        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
+        jdbcTemplate.update("DELETE FROM instapic.media WHERE article_id = ?", articleId);
+        return result;
     }
 
     @Transactional
