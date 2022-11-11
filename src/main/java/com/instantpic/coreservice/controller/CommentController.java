@@ -5,6 +5,8 @@ import com.instantpic.coreservice.dto.comment.CommentList;
 import com.instantpic.coreservice.service.CommentService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping("/comment")
 public class CommentController {
@@ -22,8 +24,8 @@ public class CommentController {
     }
 
     @DeleteMapping
-    public CommentDto deleteComment(int commentId) {
-        CommentDto result = commentService.deleteComment(commentId);
+    public CommentList deleteComment(Optional<Integer> commentId, Optional<Integer> articleId) {
+        CommentList result = commentService.deleteComment(commentId, articleId);
         return result;
     }
 

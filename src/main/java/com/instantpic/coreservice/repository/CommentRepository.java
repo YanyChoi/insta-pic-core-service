@@ -38,10 +38,17 @@ public class CommentRepository {
     }
 
     @Transactional
-    public Optional<CommentDto> deleteCommentById(int commentId) {
+    public List<CommentDto> deleteCommentByCommentId(int commentId) {
         List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE comment_id = ?;", commentDtoRowMapper(), commentId);
         jdbcTemplate.update("DELETE FROM instapic.comment WHERE comment_id = ?", commentId);
-        return result.stream().findAny();
+        return result;
+    }
+
+    @Transactional
+    public List<CommentDto> deleteCommentByArticleId(int articleId) {
+        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE article_id = ?", commentDtoRowMapper(), articleId);
+        jdbcTemplate.update("DELETE FROM instapic.comment WHERE article_id = ?", articleId);
+        return result;
     }
 
     public List<CommentDto> getRootCommentsByArticleId(int articleId) {

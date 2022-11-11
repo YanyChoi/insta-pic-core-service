@@ -6,6 +6,7 @@ import com.instantpic.coreservice.repository.CommentRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CommentService {
@@ -25,8 +26,15 @@ public class CommentService {
         return result;
     }
 
-    public CommentDto deleteComment(int commentId) {
-        CommentDto result = commentRepository.deleteCommentById(commentId).get();
+    public CommentList deleteComment(Optional<Integer> commentId, Optional<Integer> articleId) {
+        CommentList result = new CommentList();
+        if (commentId.isPresent()) {
+            result.setComments(commentRepository.deleteCommentByCommentId(commentId.get()));
+        }
+        else if (articleId.isPresent()) {
+            result.setComments(commentRepository.deleteCommentByArticleId(articleId.get()));
+        }
+        result.setCount(result.getComments().size());
         return result;
     }
 
