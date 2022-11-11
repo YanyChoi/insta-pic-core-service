@@ -1,0 +1,10 @@
+version: 3
+
+tasks:
+  build:
+    cmds:
+      - ./gradlew build
+
+  test:
+    cmds:
+      - java -jar ./build/libs/core-service-0.0.1-SNAPSHOT.jar
