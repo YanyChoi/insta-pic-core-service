@@ -3,6 +3,7 @@ version: 3
 tasks:
   build:
     cmds:
+      - sudo systemctl stop core.service
       - ./gradlew build
 
   test:
