@@ -21,6 +21,12 @@ public class ArticleService {
         return result;
     }
 
+    public ArticleList getFeedArticlesByUserId(String feedUserId) {
+        ArticleList articleList = articleRepository.getFeedArticlesByUserId(feedUserId);
+        articleList.setCount(articleList.getArticleList().size());
+        return articleList;
+    }
+
     public ArticleList getArticleListByUserId(String userId) {
         ArticleList articleList = articleRepository.getArticleListByUserId(userId);
         articleList.setCount(articleList.getArticleList().size());

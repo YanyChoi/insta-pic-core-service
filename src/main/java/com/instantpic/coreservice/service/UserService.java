@@ -12,17 +12,17 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+
+    public UserDto getUserInfoService(String userId) {
+        UserDto result;
+        result = userRepository.readUserById(userId).get();
+        return result;
+    }
     public UserDto loginService(String userId, String pw) {
         UserDto result;
         result = userRepository.readUserByIdAndPw(userId, pw).get();
         return result;
 
-    }
-
-    public UserDto logoutService(String userId) {
-        UserDto result;
-        result = userRepository.readUserById(userId).get();
-        return result;
     }
 
     public UserDto signupService(UserDto user) {

@@ -9,8 +9,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.sql.DataSource;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,7 +28,7 @@ public class UserRepository {
     }
 
     public Optional<UserDto> readUserById(String userId) {
-        List<UserDto> result = jdbcTemplate.query("SELECT * FROM instapic.user WHERE user_id = ?", userDtoRowMapper(), userId);
+        List<UserDto> result = jdbcTemplate.query("SELECT user_id, NULL AS pw ,name, profile_pic, introduction, url FROM instapic.user WHERE user_id = ?", userDtoRowMapper(), userId);
         return result.stream().findAny();
     }
 

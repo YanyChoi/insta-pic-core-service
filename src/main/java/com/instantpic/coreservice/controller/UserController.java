@@ -29,16 +29,17 @@ public class UserController {
         this.amazonS3Client = amazonS3Client;
     }
 
+    @GetMapping
+    public UserDto getUserInfoById(String id) {
+        UserDto user = userService.getUserInfoService(id);
+        return user;
+    }
+
     @GetMapping("/login")
     public UserDto login(String id, String pw) {
 
         UserDto user = userService.loginService(id, pw);
         return user;
-    }
-
-    @GetMapping("/logout")
-    public Boolean logout(String id, String pw) {
-        return true;
     }
 
     @PostMapping("/signup")

@@ -26,10 +26,13 @@ public class ArticleController {
     }
 
     @GetMapping("/list")
-    public ArticleList getArticleList(Optional<String> userId, Optional<String> location) {
+    public ArticleList getArticleList(Optional<String> userId, Optional<String> feedUserId, Optional<String> location) {
         ArticleList result;
         if (userId.isPresent()) {
             result = articleService.getArticleListByUserId(userId.get());
+        }
+        else if (feedUserId.isPresent()) {
+            result = articleService.getFeedArticlesByUserId(feedUserId.get());
         }
         else if (location.isPresent()) {
             result = articleService.getArticleListByLocation(location.get());
