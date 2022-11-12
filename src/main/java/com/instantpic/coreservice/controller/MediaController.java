@@ -30,7 +30,7 @@ public class MediaController {
         this.amazonS3Client = amazonS3Client;
     }
 
-    @PostMapping (value = "/media", consumes = {"multipart/form-data"})
+    @PostMapping (consumes = {"multipart/form-data"})
     public MediaList mediaUpload(int articleId, @RequestPart List<MultipartFile> files) throws IOException {
 
 
@@ -59,14 +59,14 @@ public class MediaController {
         return media;
     }
 
-    @GetMapping("/media")
+    @GetMapping
     public MediaList mediaShow(int articleId){
         MediaList media = mediaService.mediaShowService(articleId);
         return media;
     }
 
 
-    @DeleteMapping("/media")
+    @DeleteMapping
     public MediaList mediaDelete(Optional<Integer> articleId, Optional<Integer> mediaId) {
         MediaList result = mediaService.mediaDeleteService(articleId, mediaId);
         try {
