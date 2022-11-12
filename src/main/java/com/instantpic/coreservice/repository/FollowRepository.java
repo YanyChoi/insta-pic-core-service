@@ -27,6 +27,7 @@ public class FollowRepository {
             FollowDto follow = new FollowDto();
             follow.setUserId(rs.getString("user_id"));
             follow.setFollowId(rs.getString("following_id"));
+            follow.setProfilePic(rs.getString("profile_pic"));
           return follow;
         };
     }
@@ -47,20 +48,20 @@ public class FollowRepository {
     }
     @Transactional
     public Optional<FollowDto> unfollow(String userId, String followId) {
-        List<FollowDto> result = jdbcTemplate.query("SELECT * FROM instapic.follows WHERE user_id = ? AND following_id = ?;", followDtoRowMapper(), userId, followId);
+        List<FollowDto> result = jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user ON follow.following_id = user.user_id AS user WHERE user_id = ? AND following_id = ?;", followDtoRowMapper(), userId, followId);
         jdbcTemplate.update("DELETE FROM instapic.follows WHERE user_id = ? AND follow_id = ?", userId, followId);
         return result.stream().findAny();
     }
 
     public FollowList getFollowers(String followingId) {
         FollowList result = new FollowList();
-        result.setFollowList(jdbcTemplate.query("SELECT * FROM instapic.follows WHERE following_id = ?;", followDtoRowMapper(), followingId));
+        result.setFollowList(jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user AS user ON follow.following_id = user.user_id WHERE follow.following_id = ?;", followDtoRowMapper(), followingId));
         return result;
     }
 
     public FollowList getFollowing(String userId) {
         FollowList result = new FollowList();
-        result.setFollowList(jdbcTemplate.query("SELECT * FROM instapic.follows WHERE user_id = ?;", followDtoRowMapper(), userId));
+        result.setFollowList(jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user AS user ON follow.following_id = user.user_id WHERE follow.user_id = ?;", followDtoRowMapper(), userId));
         return result;
     }
 

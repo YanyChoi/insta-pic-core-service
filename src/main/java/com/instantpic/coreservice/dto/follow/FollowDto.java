@@ -6,9 +6,12 @@ public class FollowDto {
     private String userId;
     private String followId;
 
+    private String profilePic;
+
     public FollowDto() {
         userId = "";
         followId = "";
+        profilePic = "";
     }
 
     public FollowDto(String userId, String followId) {
@@ -30,5 +33,13 @@ public class FollowDto {
 
     public void setFollowId(String followId) {
         this.followId = followId;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 }
