@@ -34,6 +34,4 @@ public class CommentController {
         CommentList result = commentService.getComments(articleId);
         return result;
     }
-
-
 }
