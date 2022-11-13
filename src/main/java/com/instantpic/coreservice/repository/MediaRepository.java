@@ -1,6 +1,7 @@
 package com.instantpic.coreservice.repository;
 
 import com.instantpic.coreservice.dto.media.MediaDto;
+import com.instantpic.coreservice.dto.media.MediaMentionsDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -9,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.print.attribute.standard.Media;
 import javax.sql.DataSource;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,14 +24,20 @@ public class MediaRepository {
     @Autowired
     public MediaRepository(DataSource dataSource) { jdbcTemplate = new JdbcTemplate(dataSource); }
     @Transactional
-    public boolean uploadMedia(List<String> mediaUrls, int articleId){
+    public boolean uploadMedia(String url, List<String> mentions, int articleId){
         try {
-            for (String url: mediaUrls) {
                 jdbcTemplate.update(
                         "INSERT INTO instapic.media (url, article_id) VALUES (?, ?);",
                         url, articleId
                 );
-            }
+                List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE url = ? AND article_id = ?", mediaDtoRowMapper(), url, articleId);
+                Optional<MediaDto> media = result.stream().findAny();
+                int mediaId = media.get().getMediaId();
+                for (String mentionId: mentions ) {
+                    System.out.println(mediaId);
+                    System.out.println(mentionId);
+                    jdbcTemplate.update("INSERT INTO instapic.media_mention (media_id, user_id) VALUES (?, ?);", mediaId, mentionId);
+                }
             return true;
 
         }catch (Exception e){
@@ -36,7 +45,10 @@ public class MediaRepository {
         }
     }
     public List<MediaDto> readMediaByArticleId(int articleId){
-        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
+        List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?;", mediaDtoRowMapper(), articleId);
+        for (MediaDto media: result) {
+            media.setMentions(jdbcTemplate.query("SELECT * FROM instapic.media_mention WHERE media_id = ?", mediaMentionsDtoRowMapper(), media.getMediaId()));
+        }
         return result;
     }
 
@@ -62,6 +74,17 @@ public class MediaRepository {
             media.setArticleId(rs.getInt("article_id"));
 
             return media;
+        };
+    }
+
+    private RowMapper<MediaMentionsDto> mediaMentionsDtoRowMapper() {
+        return (rs, rowNum) -> {
+            MediaMentionsDto mentions = new MediaMentionsDto();
+            List<String> list = new ArrayList<>();
+            list.add(rs.getString("user_id"));
+            mentions.setMentions(list);
+            mentions.setCount(list.size());
+            return mentions;
         };
     }
 }
