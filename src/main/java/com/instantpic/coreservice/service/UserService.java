@@ -1,6 +1,7 @@
 package com.instantpic.coreservice.service;
 
 import com.instantpic.coreservice.dto.user.UserDto;
+import com.instantpic.coreservice.dto.user.UserList;
 import com.instantpic.coreservice.repository.UserRepository;
 import org.springframework.stereotype.Service;
 @Service
@@ -23,6 +24,13 @@ public class UserService {
         result = userRepository.readUserByIdAndPw(userId, pw).get();
         return result;
 
+    }
+
+    public UserList searchService(String keyword) {
+        UserList result = new UserList();
+        result.setUsers(userRepository.readUserByKeyword(keyword));
+        result.setCount(result.getUsers().size());
+        return result;
     }
 
     public UserDto signupService(UserDto user) {
@@ -50,4 +58,5 @@ public class UserService {
 
         return user;
     }
+
 }
