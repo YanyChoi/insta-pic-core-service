@@ -43,13 +43,13 @@ public class FollowRepository {
     @Transactional
     public Optional<FollowDto> follow(String userId, String followId) {
         jdbcTemplate.update("INSERT INTO instapic.follows (user_id, following_id) VALUES (?, ?)", userId, followId);
-        List<FollowDto> result = jdbcTemplate.query("SELECT * FROM instapic.follows WHERE user_id = ? AND following_id = ?;", followDtoRowMapper(), userId, followId);
+        List<FollowDto> result = jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user AS user ON follow.following_id = user.user_id WHERE follow.user_id = ? AND follow.following_id = ?;", followDtoRowMapper(), userId, followId);
         return result.stream().findAny();
     }
     @Transactional
     public Optional<FollowDto> unfollow(String userId, String followId) {
-        List<FollowDto> result = jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user ON follow.following_id = user.user_id AS user WHERE user_id = ? AND following_id = ?;", followDtoRowMapper(), userId, followId);
-        jdbcTemplate.update("DELETE FROM instapic.follows WHERE user_id = ? AND follow_id = ?", userId, followId);
+        List<FollowDto> result = jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user AS user ON follow.following_id = user.user_id WHERE follow.user_id = ? AND follow.following_id = ?;", followDtoRowMapper(), userId, followId);
+        jdbcTemplate.update("DELETE FROM instapic.follows WHERE user_id = ? AND following_id = ?;", userId, followId);
         return result.stream().findAny();
     }
 
