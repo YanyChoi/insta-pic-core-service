@@ -33,7 +33,7 @@ public class LikeRepository {
     private RowMapper<CommentLikeDto> commentLikeDtoRowMapper() {
         return (rs, rowNum) -> {
             CommentLikeDto like = new CommentLikeDto();
-            like.setCommentId(rs.getInt("commnet_id"));
+            like.setCommentId(rs.getInt("comment_id"));
             like.setUserId(rs.getString("user_id"));
             return like;
         };
