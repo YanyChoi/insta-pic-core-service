@@ -4,14 +4,12 @@ public class ArticleLikeDto {
     private int articleId;
     private String userId;
 
+    private String profilePic;
+
     public ArticleLikeDto() {
         articleId = 0;
         userId = "";
-    }
-
-    public ArticleLikeDto(int articleId, String userId) {
-        this.articleId = articleId;
-        this.userId = userId;
+        profilePic = "";
     }
 
     public int getArticleId() {
@@ -27,4 +25,12 @@ public class ArticleLikeDto {
     }
 
     public void setUserId(String userId) {this.userId = userId;}
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
+    }
 }
