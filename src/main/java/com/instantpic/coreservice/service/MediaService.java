@@ -40,9 +40,9 @@ public class MediaService {
         result.setCount(result.getMedia().size());
         return result;
     }
-    public MediaList mediaUploadService(List<String> MediaUrls, int articleId){
+    public MediaList mediaUploadService(String url, List<String> mentions ,int articleId){
         MediaList result = new MediaList();
-        boolean upload = mediaRepository.uploadMedia(MediaUrls, articleId);
+        boolean upload = mediaRepository.uploadMedia(url, mentions ,articleId);
         if (upload){
             result.setMedia(mediaRepository.readMediaByArticleId(articleId));
         }

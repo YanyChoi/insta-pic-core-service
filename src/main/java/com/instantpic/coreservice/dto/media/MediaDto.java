@@ -1,14 +1,20 @@
 package com.instantpic.coreservice.dto.media;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class MediaDto {
     private int mediaId;
     private int articleId;
     private String url;
 
+    private List<MediaMentionsDto> mentions;
+
     public MediaDto() {
         mediaId = 0;
         articleId = 0;
         url = "";
+        mentions = new ArrayList<MediaMentionsDto>();
     }
 
     public MediaDto(int mediaId, int articleId, String url) {
@@ -41,6 +47,14 @@ public class MediaDto {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public List<MediaMentionsDto> getMentions() {
+        return mentions;
+    }
+
+    public void setMentions(List<MediaMentionsDto> mentions) {
+        this.mentions = mentions;
     }
 }
 
