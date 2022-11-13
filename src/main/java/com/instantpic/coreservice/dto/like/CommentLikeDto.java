@@ -4,16 +4,14 @@ public class CommentLikeDto {
     private int commentId;
     private String userId;
 
+    private String profilePic;
+
     public CommentLikeDto(){
         commentId = 0;
         userId = "";
+        profilePic = "";
     }
 
-    public CommentLikeDto(int commentId, String userId)
-    {
-        this.commentId = commentId;
-        this.userId = userId;
-    }
 
     public int getCommentId() {
         return commentId;
@@ -29,5 +27,13 @@ public class CommentLikeDto {
 
     public void setUserId(String userId) {
         this.userId = userId;
+    }
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 }
