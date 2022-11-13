@@ -32,6 +32,12 @@ public class UserRepository {
         return result.stream().findAny();
     }
 
+    public List<UserDto> readUserByKeyword(String keyword) {
+        String condition = '%' + keyword + '%';
+        List<UserDto> result = jdbcTemplate.query("SELECT * FROM instapic.user WHERE user_id LIKE ?;", userDtoRowMapper(), condition);
+        return result;
+    }
+
     @Transactional
     public Optional<UserDto> updateUserPw(String id, String pw) {
         jdbcTemplate.update("UPDATE instapic.user SET pw = ? WHERE user_id = ?", pw, id);

@@ -5,6 +5,7 @@ import com.amazonaws.services.s3.model.CannedAccessControlList;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.instantpic.coreservice.dto.user.UserDto;
+import com.instantpic.coreservice.dto.user.UserList;
 import com.instantpic.coreservice.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,12 @@ public class UserController {
 
         UserDto user = userService.loginService(id, pw);
         return user;
+    }
+
+    @GetMapping("/search")
+    public UserList search(Optional<String> keyword) {
+        UserList result = userService.searchService(keyword.isEmpty() ? "" : keyword.get());
+        return result;
     }
 
     @PostMapping("/signup")
