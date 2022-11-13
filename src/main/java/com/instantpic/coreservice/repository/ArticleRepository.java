@@ -28,36 +28,36 @@ public class ArticleRepository {
     public Optional<ArticleDto> postArticle(ArticleDto article) {
         jdbcTemplate.update("INSERT INTO instapic.article (location, text, user_id) VALUES (?, ?, ?);",
                 article.getLocation(), article.getText(), article.getUserId());
-        List<ArticleDto> result = jdbcTemplate.query("SELECT * FROM instapic.article WHERE user_id = ? ORDER BY datetime DESC;", articleDtoRowMapper(), article.getUserId());
+        List<ArticleDto> result = jdbcTemplate.query("SELECT article.*, media.url AS thumbnail FROM instapic.article AS article LEFT JOIN instapic.media AS media ON article.article_id = media.article_id WHERE user_id = ? ORDER BY datetime DESC;", articleDtoRowMapper(), article.getUserId());
         return result.stream().findAny();
     }
 
     public ArticleList getFeedArticlesByUserId(String feedUserId) {
         ArticleList articleList = new ArticleList();
-        articleList.setArticleList(jdbcTemplate.query("SELECT * FROM instapic.article WHERE user_id IN (SELECT following_id FROM instapic.follows WHERE user_id = ?) ORDER BY article_id DESC;", articleDtoRowMapper(), feedUserId));
+        articleList.setArticleList(jdbcTemplate.query("SELECT *, '' AS thumbnail FROM instapic.article WHERE user_id IN (SELECT following_id FROM instapic.follows WHERE user_id = ?) ORDER BY article_id DESC;", articleDtoRowMapper(), feedUserId));
         return articleList;
     }
 
     public ArticleList getArticleListByUserId(String userId) {
         ArticleList articleList = new ArticleList();
-        articleList.setArticleList(jdbcTemplate.query("SELECT * FROM instapic.article WHERE user_id = ?;", articleDtoRowMapper(), userId));
+        articleList.setArticleList(jdbcTemplate.query("SELECT article.*, media.url AS thumbnail FROM instapic.article AS article INNER JOIN instapic.media AS media ON article.article_id = media.article_id WHERE user_id = ? GROUP BY article_id;", articleDtoRowMapper(), userId));
         return articleList;
     }
 
     public ArticleList getArticleListByLocation(String location) {
         ArticleList articleList = new ArticleList();
-        articleList.setArticleList(jdbcTemplate.query("SELECT * FROM instapic.article WHERE location = ?;", articleDtoRowMapper(), location));
+        articleList.setArticleList(jdbcTemplate.query("SELECT article.*, media.url AS thumbnail FROM instapic.article AS article INNER JOIN instapic.media AS media ON article.article_id = media.article_id WHERE location = ?;", articleDtoRowMapper(), location));
         return articleList;
     }
 
     public Optional<ArticleDto> getArticleById(int articleId) {
-        List<ArticleDto> result = jdbcTemplate.query("SELECT * FROM instapic.article WHERE article_id = ?;", articleDtoRowMapper(), articleId);
+        List<ArticleDto> result = jdbcTemplate.query("SELECT article.*, media.url AS thumbnail FROM instapic.article AS article INNER JOIN instapic.media AS media ON article.article_id = media.article_id WHERE article_id = ?;", articleDtoRowMapper(), articleId);
         return result.stream().findAny();
     }
 
     @Transactional
     public Optional<ArticleDto> deleteArticle(int articleId) {
-        List<ArticleDto> result = jdbcTemplate.query("SELECT * FROM instapic.article WHERE article_id = ?;", articleDtoRowMapper(), articleId);
+        List<ArticleDto> result = jdbcTemplate.query("SELECT article.*, media.url AS thumbnail FROM instapic.article AS article INNER JOIN instapic.media AS media ON article.article_id = media.article_id WHERE article_id = ?;", articleDtoRowMapper(), articleId);
         jdbcTemplate.update("DELETE FROM instapic.article WHERE article_id = ?", articleId);
         return result.stream().findAny();
     }
@@ -69,6 +69,7 @@ public class ArticleRepository {
             article.setLocation(rs.getString("location"));
             article.setText(rs.getString("text"));
             article.setUserId(rs.getString("user_id"));
+            article.setThumbnail(rs.getString("thumbnail"));
             return article;
         };
     }

@@ -26,7 +26,7 @@ public class CommentRepository {
     public Optional<CommentDto> postComment(CommentDto comment) {
         jdbcTemplate.update("INSERT INTO instapic.comment (article_id, user_id, text, parent_comment_id) VALUES (?, ?, ?, ?);",
                 comment.getArticleId(), comment.getUserId(), comment.getText(), comment.getParentCommentId());
-        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE article_id = ? AND user_id = ? ORDER BY comment_id DESC;", commentDtoRowMapper(), comment.getArticleId(), comment.getUserId());
+        List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ? AND comment.user_id = ? ORDER BY comment_id DESC;", commentDtoRowMapper(), comment.getArticleId(), comment.getUserId());
         return result.stream().findAny();
     }
 
@@ -39,25 +39,25 @@ public class CommentRepository {
 
     @Transactional
     public List<CommentDto> deleteCommentByCommentId(int commentId) {
-        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE comment_id = ?;", commentDtoRowMapper(), commentId);
+        List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.comment_id = ?;", commentDtoRowMapper(), commentId);
         jdbcTemplate.update("DELETE FROM instapic.comment WHERE comment_id = ?", commentId);
         return result;
     }
 
     @Transactional
     public List<CommentDto> deleteCommentByArticleId(int articleId) {
-        List<CommentDto> result = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE article_id = ?", commentDtoRowMapper(), articleId);
+        List<CommentDto> result = jdbcTemplate.query("SSELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ?", commentDtoRowMapper(), articleId);
         jdbcTemplate.update("DELETE FROM instapic.comment WHERE article_id = ?", articleId);
         return result;
     }
 
     public List<CommentDto> getRootCommentsByArticleId(int articleId) {
-        List<CommentDto> comments = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE article_id = ? AND parent_comment_id IS NULL;", commentDtoRowMapper(), articleId);
+        List<CommentDto> comments = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ? AND comment.parent_comment_id = 0;", commentDtoRowMapper(), articleId);
         return comments;
     }
 
     public List<CommentDto> getChildCommentsByCommentId(int commentId) {
-        List<CommentDto> comments = jdbcTemplate.query("SELECT * FROM instapic.comment WHERE parent_comment_id = ?;", commentDtoRowMapper(), commentId);
+        List<CommentDto> comments = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.parent_comment_id = ?;", commentDtoRowMapper(), commentId);
         return comments;
     }
 
@@ -70,6 +70,7 @@ public class CommentRepository {
             comment.setText(rs.getString("text"));
             comment.setDatetime(rs.getString("datetime"));
             comment.setParentCommentId(rs.getInt("parent_comment_id"));
+            comment.setProfilePic(rs.getString("profile_pic"));
             return comment;
         };
     }

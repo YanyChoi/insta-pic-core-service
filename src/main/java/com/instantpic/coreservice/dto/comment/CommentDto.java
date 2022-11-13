@@ -8,12 +8,14 @@ public class CommentDto {
     private int commentId;
     private int articleId;
     private String userId;
+    private String profilePic;
     private String mentionedId;
     private String text;
     private String datetime;
     private List<CommentDto> childComments;
     private int childCount;
     private int parentCommentId;
+
 
     public CommentDto() {
         commentId = 0;
@@ -25,6 +27,16 @@ public class CommentDto {
         parentCommentId = 0;
         childComments = new ArrayList<CommentDto>();
         childCount = 0;
+        profilePic = "";
+    }
+
+
+    public String getProfilePic() {
+        return profilePic;
+    }
+
+    public void setProfilePic(String profilePic) {
+        this.profilePic = profilePic;
     }
 
     public int getCommentId() {
