@@ -34,7 +34,7 @@ public class ArticleRepository {
 
     public ArticleList getFeedArticlesByUserId(String feedUserId) {
         ArticleList articleList = new ArticleList();
-        articleList.setArticleList(jdbcTemplate.query("SELECT *, '' AS thumbnail FROM instapic.article WHERE user_id IN (SELECT following_id FROM instapic.follows WHERE user_id = ?) ORDER BY article_id DESC;", articleDtoRowMapper(), feedUserId));
+        articleList.setArticleList(jdbcTemplate.query("SELECT *, '' AS thumbnail FROM instapic.article WHERE user_id IN (SELECT following_id FROM instapic.follows WHERE user_id = ?) OR user_id = ? ORDER BY article_id DESC;", articleDtoRowMapper(), feedUserId, feedUserId));
         return articleList;
     }
 
