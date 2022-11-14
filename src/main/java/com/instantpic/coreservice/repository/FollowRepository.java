@@ -55,7 +55,7 @@ public class FollowRepository {
 
     public FollowList getFollowers(String followingId) {
         FollowList result = new FollowList();
-        result.setFollowList(jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user AS user ON follow.following_id = user.user_id WHERE follow.following_id = ?;", followDtoRowMapper(), followingId));
+        result.setFollowList(jdbcTemplate.query("SELECT follow.*, user.profile_pic FROM instapic.follows AS follow INNER JOIN instapic.user AS user ON follow.user_id = user.user_id WHERE follow.following_id = ?;", followDtoRowMapper(), followingId));
         return result;
     }
 
