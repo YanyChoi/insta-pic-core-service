@@ -6,7 +6,6 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.instantpic.coreservice.dto.media.MediaDto;
 import com.instantpic.coreservice.dto.media.MediaList;
-import com.instantpic.coreservice.dto.media.MediaMentionsDto;
 import com.instantpic.coreservice.service.MediaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +30,7 @@ public class MediaController {
     }
 
     @PostMapping (consumes = {"multipart/form-data"})
-    public MediaList mediaUpload(int articleId, @RequestPart MediaMentionsDto mentions, @RequestPart MultipartFile multipartFile) throws IOException {
+    public MediaList mediaUpload(int articleId, @RequestPart List<String> mentions, @RequestPart MultipartFile multipartFile) throws IOException {
 
 
 
@@ -52,7 +50,7 @@ public class MediaController {
 
             String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
 
-        MediaList media = mediaService.mediaUploadService(imagePath, mentions.getMentions() ,articleId);
+        MediaList media = mediaService.mediaUploadService(imagePath, mentions ,articleId);
         return media;
     }
 

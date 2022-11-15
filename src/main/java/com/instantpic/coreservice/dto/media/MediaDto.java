@@ -8,13 +8,13 @@ public class MediaDto {
     private int articleId;
     private String url;
 
-    private List<MediaMentionsDto> mentions;
+    private List<String> mentions;
 
     public MediaDto() {
         mediaId = 0;
         articleId = 0;
         url = "";
-        mentions = new ArrayList<MediaMentionsDto>();
+        mentions = new ArrayList<String>();
     }
 
     public MediaDto(int mediaId, int articleId, String url) {
@@ -49,11 +49,11 @@ public class MediaDto {
         this.url = url;
     }
 
-    public List<MediaMentionsDto> getMentions() {
+    public List<String> getMentions() {
         return mentions;
     }
 
-    public void setMentions(List<MediaMentionsDto> mentions) {
+    public void setMentions(List<String> mentions) {
         this.mentions = mentions;
     }
 }
