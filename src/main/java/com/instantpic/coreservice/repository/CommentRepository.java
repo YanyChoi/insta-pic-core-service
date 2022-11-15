@@ -40,24 +40,26 @@ public class CommentRepository {
     @Transactional
     public List<CommentDto> deleteCommentByCommentId(int commentId) {
         List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.comment_id = ?;", commentDtoRowMapper(), commentId);
+        jdbcTemplate.update("DELETE FROM instapic.comment_mention WHERE comment_id = ?;", commentId);
         jdbcTemplate.update("DELETE FROM instapic.comment WHERE comment_id = ?", commentId);
         return result;
     }
 
     @Transactional
     public List<CommentDto> deleteCommentByArticleId(int articleId) {
-        List<CommentDto> result = jdbcTemplate.query("SSELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ?", commentDtoRowMapper(), articleId);
+        List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ?", commentDtoRowMapper(), articleId);
+        jdbcTemplate.update("DELETE FROM instapic.comment_mention WHERE comment_id IN (SELECT comment_id FROM instapic.comment WHERE article_id = ?);", articleId);
         jdbcTemplate.update("DELETE FROM instapic.comment WHERE article_id = ?", articleId);
         return result;
     }
 
     public List<CommentDto> getRootCommentsByArticleId(int articleId) {
-        List<CommentDto> comments = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ? AND comment.parent_comment_id = 0;", commentDtoRowMapper(), articleId);
+        List<CommentDto> comments = jdbcTemplate.query("SELECT comment.*, user.profile_pic, mention.user_id AS mentioned_id FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id LEFT JOIN instapic.comment_mention AS mention ON comment.comment_id = mention.comment_id WHERE comment.article_id = ? AND comment.parent_comment_id = 0 GROUP BY comment.comment_id;", commentDtoRowMapper(), articleId);
         return comments;
     }
 
     public List<CommentDto> getChildCommentsByCommentId(int commentId) {
-        List<CommentDto> comments = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.parent_comment_id = ?;", commentDtoRowMapper(), commentId);
+        List<CommentDto> comments = jdbcTemplate.query("SELECT comment.*, user.profile_pic, mention.user_id AS mentioned_id FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id LEFT JOIN instapic.comment_mention AS mention ON comment.comment_id = mention.comment_id WHERE comment.parent_comment_id = ? GROUP BY comment.comment_id;", commentDtoRowMapper(), commentId);
         return comments;
     }
 
@@ -71,6 +73,7 @@ public class CommentRepository {
             comment.setDatetime(rs.getString("datetime"));
             comment.setParentCommentId(rs.getInt("parent_comment_id"));
             comment.setProfilePic(rs.getString("profile_pic"));
+            comment.setMentionedId(rs.getString("mentioned_id"));
             return comment;
         };
     }
