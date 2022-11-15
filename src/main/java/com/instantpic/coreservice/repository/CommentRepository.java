@@ -26,7 +26,7 @@ public class CommentRepository {
     public Optional<CommentDto> postComment(CommentDto comment) {
         jdbcTemplate.update("INSERT INTO instapic.comment (article_id, user_id, text, parent_comment_id) VALUES (?, ?, ?, ?);",
                 comment.getArticleId(), comment.getUserId(), comment.getText(), comment.getParentCommentId());
-        List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id WHERE comment.article_id = ? AND comment.user_id = ? ORDER BY comment_id DESC;", commentDtoRowMapper(), comment.getArticleId(), comment.getUserId());
+        List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic, mention.user_id AS mentioned_id FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id LEFT JOIN instapic.comment_mention AS mention ON comment.comment_id = mention.comment_id WHERE comment.article_id = ? AND comment.user_id = ? ORDER BY comment_id DESC;", commentDtoRowMapper(), comment.getArticleId(), comment.getUserId());
         return result.stream().findAny();
     }
 
