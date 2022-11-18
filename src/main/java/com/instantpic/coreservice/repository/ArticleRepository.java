@@ -58,6 +58,13 @@ public class ArticleRepository {
     @Transactional
     public Optional<ArticleDto> deleteArticle(int articleId) {
         List<ArticleDto> result = jdbcTemplate.query("SELECT article.*, media.url AS thumbnail FROM instapic.article AS article INNER JOIN instapic.media AS media ON article.article_id = media.article_id WHERE article.article_id = ?;", articleDtoRowMapper(), articleId);
+
+        jdbcTemplate.update("DELETE FROM instapic.comment_mention WHERE comment_id IN (SELECT comment_id FROM instapic.comment WHERE article_id = ?);", articleId);
+        jdbcTemplate.update("DELETE FROM instapic.comment_like WHERE comment_id IN (SELECT comment_id FROM instapic.comment WHERE article_id = ?);", articleId);
+        jdbcTemplate.update("DELETE FROM instapic.comment WHERE article_id = ?", articleId);
+        jdbcTemplate.update("DELETE FROM instapic.article_like WHERE article_id = ?", articleId);
+        jdbcTemplate.update("DELETE FROM instapic.media_mention WHERE media_id IN (SELECT media_id FROM instapic.media WHERE article_id = ?)", articleId);
+        jdbcTemplate.update("DELETE FROM instapic.media WHERE article_id = ?", articleId);
         jdbcTemplate.update("DELETE FROM instapic.article WHERE article_id = ?", articleId);
         return result.stream().findAny();
     }
