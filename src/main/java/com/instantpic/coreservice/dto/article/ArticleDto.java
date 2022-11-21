@@ -10,8 +10,9 @@ public class ArticleDto {
     private String location;
     private String text;
     private String date;
-
     private String thumbnail;
+    private int likes;
+    private int comments;
 
     public ArticleDto() {
         articleId = 0;
@@ -20,16 +21,10 @@ public class ArticleDto {
         text = "";
         userId = "";
         thumbnail = "";
+        likes = 0;
+        comments = 0;
     }
 
-    public ArticleDto(int articleId, String date, String location, String text, String userId, String thumbnail) {
-        this.articleId = articleId;
-        this.date = date;
-        this.location = location;
-        this.text = text;
-        this.userId = userId;
-        this.thumbnail = thumbnail;
-    }
 
     public int getArticleId() {
         return articleId;
@@ -77,5 +72,21 @@ public class ArticleDto {
 
     public void setThumbnail(String thumbnail) {
         this.thumbnail = thumbnail;
+    }
+
+    public int getLikes() {
+        return likes;
+    }
+
+    public void setLikes(int likes) {
+        this.likes = likes;
+    }
+
+    public int getComments() {
+        return comments;
+    }
+
+    public void setComments(int comments) {
+        this.comments = comments;
     }
 }
