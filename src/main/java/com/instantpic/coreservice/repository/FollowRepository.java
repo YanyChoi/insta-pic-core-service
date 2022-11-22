@@ -36,6 +36,7 @@ public class FollowRepository {
         return (rs, rowNum) -> {
             NeighborDto neighbor = new NeighborDto();
             neighbor.setNeighborId(rs.getString("following_id"));
+            neighbor.setProfilePic(rs.getString("profile_pic"));
             return neighbor;
         };
     }
@@ -67,7 +68,7 @@ public class FollowRepository {
 
     public NeighborList getNeighbors(String userId, String followingId) {
         NeighborList result = new NeighborList();
-        result.setNeighbors(jdbcTemplate.query("SELECT a.following_id FROM instapic.follows AS a INNER JOIN instapic.follows AS b ON a.following_id = b.user_id WHERE a.user_id = ? AND b.following_id = ?;", neighborDtoRowMapper(), userId, followingId));
+        result.setNeighbors(jdbcTemplate.query("SELECT a.following_id, user.profile_pic FROM instapic.follows AS a INNER JOIN instapic.follows AS b ON a.following_id = b.user_id INNER JOIN instapic.user AS user ON a.following_id = user.user_id WHERE a.user_id = ? AND b.following_id = ?;", neighborDtoRowMapper(), userId, followingId));
         return result;
     }
 
