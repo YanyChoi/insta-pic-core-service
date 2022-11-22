@@ -52,7 +52,7 @@ public class UserController {
     @PostMapping("/signup")
     public UserDto signUp(@RequestPart UserDto userDraft, @RequestPart MultipartFile profilePic) throws IOException {
 
-        String originalName = profilePic.getOriginalFilename(); // 파일 이름
+        String originalName = profilePic.getOriginalFilename() + "-user-" + userDraft.getUserId(); // 파일 이름
         long size = profilePic.getSize(); // 파일 크기
 
         ObjectMetadata objectMetaData = new ObjectMetadata();

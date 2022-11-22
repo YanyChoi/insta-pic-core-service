@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,23 +33,21 @@ public class MediaController {
     @PostMapping (consumes = {"multipart/form-data"})
     public MediaList mediaUpload(int articleId, @RequestPart List<String> mentions, @RequestPart MultipartFile multipartFile) throws IOException {
 
+        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+        String originalName = multipartFile.getOriginalFilename() + articleId + timestamp.getTime(); // 파일 이름
+        long size = multipartFile.getSize(); // 파일 크기
 
+        ObjectMetadata objectMetaData = new ObjectMetadata();
+        objectMetaData.setContentType(multipartFile.getContentType());
+        objectMetaData.setContentLength(size);
 
+        // S3에 업로드
+        amazonS3Client.putObject(
+                new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(), objectMetaData)
+                        .withCannedAcl(CannedAccessControlList.PublicRead)
+        );
 
-            String originalName = multipartFile.getOriginalFilename(); // 파일 이름
-            long size = multipartFile.getSize(); // 파일 크기
-
-            ObjectMetadata objectMetaData = new ObjectMetadata();
-            objectMetaData.setContentType(multipartFile.getContentType());
-            objectMetaData.setContentLength(size);
-
-            // S3에 업로드
-            amazonS3Client.putObject(
-                    new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(), objectMetaData)
-                            .withCannedAcl(CannedAccessControlList.PublicRead)
-            );
-
-            String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
+        String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
 
         MediaList media = mediaService.mediaUploadService(imagePath, mentions ,articleId);
         return media;
