@@ -49,7 +49,6 @@ public class MediaRepository {
     @Transactional
     public List<MediaDto> deleteSeparateMedia(int mediaId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE media_id = ?", mediaDtoRowMapper(), mediaId);
-        jdbcTemplate.update("DELETE FROM instapic.media_mention WHERE media_id = ?", mediaId);
         jdbcTemplate.update("DELETE FROM instapic.media WHERE media_id = ?", mediaId);
         return result;
     }
@@ -57,7 +56,6 @@ public class MediaRepository {
     @Transactional
     public List<MediaDto> deleteAllMedia(int articleId){
         List<MediaDto> result = jdbcTemplate.query("SELECT * FROM instapic.media WHERE article_id = ?", mediaDtoRowMapper(), articleId);
-        jdbcTemplate.update("DELETE FROM instapic.media_mention WHERE media_id IN (SELECT media_id FROM instapic.media WHERE article_id = ?);", articleId);
         jdbcTemplate.update("DELETE FROM instapic.media WHERE article_id = ?", articleId);
         return result;
     }
