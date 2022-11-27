@@ -40,7 +40,7 @@ public class CommentRepository {
     @Transactional
     public List<CommentDto> deleteCommentByCommentId(int commentId) {
         List<CommentDto> result = jdbcTemplate.query("SELECT comment.*, user.profile_pic, mention.user_id AS mentioned_id FROM instapic.comment AS comment INNER JOIN instapic.user AS user ON comment.user_id = user.user_id LEFT JOIN instapic.comment_mention AS mention ON comment.comment_id = mention.comment_id WHERE comment.comment_id = ?;", commentDtoRowMapper(), commentId);
-        jdbcTemplate.update("DELETE FROM instapic.comment WHERE comment_id = ? OR parent_comment_id = ?;", commentId, commentId);
+        jdbcTemplate.update("DELETE FROM instapic.comment WHERE comment_id = ?;", commentId, commentId);
         return result;
     }
 
