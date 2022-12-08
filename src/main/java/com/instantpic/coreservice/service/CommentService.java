@@ -29,10 +29,10 @@ public class CommentService {
     public CommentList deleteComment(Optional<Integer> commentId, Optional<Integer> articleId) {
         CommentList result = new CommentList();
         if (commentId.isPresent()) {
-            result.setComments(commentRepository.deleteCommentByCommentId(commentId.get()));
+            result.setComments(commentRepository.deleteCommentByCommentId(commentId.get().intValue()));
         }
         else if (articleId.isPresent()) {
-            result.setComments(commentRepository.deleteCommentByArticleId(articleId.get()));
+            result.setComments(commentRepository.deleteCommentByArticleId(articleId.get().intValue()));
         }
         result.setCount(result.getComments().size());
         return result;

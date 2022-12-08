@@ -9,11 +9,6 @@ tasks:
   test:
     cmds:
       - java -jar ./build/libs/core-service-0.0.1-SNAPSHOT.jar
-
-  deploy:
-    cmds:
-      - sudo systemctl start core.service
-      - sudo systemctl status core.service
   
   status:
     cmds:
@@ -21,4 +16,16 @@ tasks:
   stop:
     cmds:
       - sudo systemctl stop core.service
-  
+  docker:
+    cmds:
+      - ./gradlew build
+      - docker build -t yhc0818/insta-pic-core-service:latest .
+      - docker push yhc0818/insta-pic-core-service:latest
+  deploy:
+    cmds:
+      - ./gradlew build
+      - docker build -t yhc0818/insta-pic-core-service:latest --platform linux/amd64 .
+      - docker push yhc0818/insta-pic-core-service:latest
+  expose:
+    cmds:
+      - docker run -d -p 8080:8080 yhc0818/insta-pic-core-service

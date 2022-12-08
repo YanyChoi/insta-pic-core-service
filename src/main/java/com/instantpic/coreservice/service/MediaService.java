@@ -42,7 +42,8 @@ public class MediaService {
     }
     public MediaList mediaUploadService(String url, List<String> mentions ,int articleId){
         MediaList result = new MediaList();
-        boolean upload = mediaRepository.uploadMedia(url, mentions ,articleId);
+        String cdnUrl = url.replace("https://instapic-media.s3.ap-northeast-2.amazonaws.com/", "https://ds27ztqt2rer0.cloudfront.net/");
+        boolean upload = mediaRepository.uploadMedia(cdnUrl, mentions ,articleId);
         if (upload){
             result.setMedia(mediaRepository.readMediaByArticleId(articleId));
         }
