@@ -53,11 +53,10 @@ public class UserController {
     public UserDto signUp(@RequestPart UserDto userDraft, @RequestPart MultipartFile profilePic) throws IOException {
 
         String originalName = profilePic.getOriginalFilename() + "-user-" + userDraft.getUserId(); // 파일 이름
-        long size = profilePic.getSize(); // 파일 크기
 
         ObjectMetadata objectMetaData = new ObjectMetadata();
         objectMetaData.setContentType(profilePic.getContentType());
-        objectMetaData.setContentLength(size);
+        objectMetaData.setContentLength(profilePic.getSize());
 
         // S3에 업로드
         amazonS3Client.putObject(
