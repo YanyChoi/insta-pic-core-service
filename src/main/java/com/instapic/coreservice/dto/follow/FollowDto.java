@@ -1,7 +1,5 @@
 package com.instapic.coreservice.dto.follow;
 
-import java.util.List;
-
 public class FollowDto {
     private String userId;
     private String followId;

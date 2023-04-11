@@ -1,9 +1,5 @@
 package com.instapic.coreservice.dto.article;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-
 public class ArticleDto {
     private int articleId;
     private String userId;
