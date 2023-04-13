@@ -1,56 +1,57 @@
 package com.instapic.coreservice.controller;
 
+import com.instapic.coreservice.domain.Article;
 import com.instapic.coreservice.dto.article.ArticleDto;
 import com.instapic.coreservice.dto.article.ArticleList;
+import com.instapic.coreservice.dto.request.article.ArticlePostRequestDto;
+import com.instapic.coreservice.dto.response.article.ArticleDetailResponseDto;
+import com.instapic.coreservice.dto.response.article.ArticlePreviewResponseDto;
 import com.instapic.coreservice.service.ArticleService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/article")
+@RequiredArgsConstructor
 public class ArticleController {
 
-    private ArticleService articleService;
-    @Autowired
-    public ArticleController(ArticleService articleService) {
-        this.articleService = articleService;
+    private final ArticleService articleService;
+
+    @PostMapping("/user/{userId}/article")
+    public ResponseEntity<ArticlePreviewResponseDto> postArticle(@PathVariable Long userId, @RequestBody ArticlePostRequestDto body) {
+        return ResponseEntity.ok().body(articleService.createArticle(userId, body));
     }
 
-    @PostMapping
-    public ArticleDto postArticle(@RequestBody ArticleDto newArticle) {
-        ArticleDto article = articleService.postArticle(newArticle);
-        return article;
+    @GetMapping("/article/{articleId}")
+    public ResponseEntity<ArticleDetailResponseDto> getArticle(@PathVariable Long articleId) {
+        return ResponseEntity.ok().body(articleService.getArticleById(articleId));
     }
 
-    @GetMapping("/list")
-    public ArticleList getArticleList(Optional<String> userId, Optional<String> feedUserId, Optional<String> location) {
-        ArticleList result;
-        if (userId.isPresent()) {
-            result = articleService.getArticleListByUserId(userId.get());
-        }
-        else if (feedUserId.isPresent()) {
-            result = articleService.getFeedArticlesByUserId(feedUserId.get());
-        }
-        else if (location.isPresent()) {
-            result = articleService.getArticleListByLocation(location.get());
-        }
-        else {
-            result = new ArticleList();
-        }
-        return result;
+    @DeleteMapping("/article/{articleId}")
+    public ResponseEntity<Void> deleteArticle(@PathVariable Long articleId) {
+        articleService.deleteArticle(articleId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @GetMapping
-    public ArticleDto getArticle(int articleId) {
-        ArticleDto article = articleService.getArticleById(articleId);
-        return article;
+    @GetMapping("/user/{userId}/feed")
+    public ResponseEntity<Page<ArticleDetailResponseDto>> getArticleFeed(@PathVariable Long userId, @RequestParam int offset, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getFeedArticles(userId, offset, size));
     }
 
-    @DeleteMapping
-    public ArticleDto deleteArticle(int articleId) {
-        ArticleDto article = articleService.deleteArticle(articleId);
-        return article;
+    @GetMapping("/user/{userId}/articles")
+    public ResponseEntity<Page<ArticleDetailResponseDto>> getUserArticles(@PathVariable Long userId, @RequestParam int offset, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getUserArticles(userId, offset, size));
+    }
+
+    @GetMapping("/location/{location}/articles")
+    public ResponseEntity<Page<ArticleDetailResponseDto>> getLocationArticles(@PathVariable String location, @RequestParam int offset, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getLocationArticles(location, offset, size));
     }
 }
