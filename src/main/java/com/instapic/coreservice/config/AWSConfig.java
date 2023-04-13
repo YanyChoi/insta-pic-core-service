@@ -4,8 +4,10 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -13,27 +15,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 @Configuration
+@PropertySource("aws.yaml")
 public class AWSConfig {
 
+    @Value("${AWS_ACCESS_KEY}")
     private String iamAccessKey;
+    @Value("${AWS_SECRET_KEY}")
     private String iamSecretKey;
-    private String region = "ap-northeast-2"; // Bucket Region
-
-    FileInputStream propsInput;
-
-    {
-        try {
-            propsInput = new FileInputStream("src/main/resources/aws.properties");
-            Properties prop = new Properties();
-            prop.load(propsInput);
-            iamAccessKey = prop.getProperty("aws_access_key_id"); // IAM Access Key
-            iamSecretKey = prop.getProperty("aws_secret_access_key");; // IAM Secret Key
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+    @Value("${REGION}")
+    private String region;
 ;
 
     @Bean

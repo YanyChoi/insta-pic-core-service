@@ -38,3 +38,4 @@ out/
 src/main/resources/aws.properties
 src/main/resources/application.properties
 /src/main/resources/application.yaml
+src/main/resources/aws.yaml
