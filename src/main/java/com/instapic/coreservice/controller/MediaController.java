@@ -6,8 +6,13 @@ import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.instapic.coreservice.dto.media.MediaDto;
 import com.instapic.coreservice.dto.media.MediaList;
+import com.instapic.coreservice.dto.request.media.MediaPostRequestDto;
 import com.instapic.coreservice.service.MediaService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.InvalidPropertyException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,60 +23,21 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/media")
+@RequiredArgsConstructor
 public class MediaController {
-    private MediaService mediaService;
-    private AmazonS3Client amazonS3Client;
-    private String S3Bucket = "instapic-media";
 
-    @Autowired
-    public MediaController(MediaService mediaService, AmazonS3Client amazonS3Client){
-        this.mediaService = mediaService;
-        this.amazonS3Client = amazonS3Client;
-    }
+    private final MediaService mediaService;
 
-    @PostMapping (consumes = {"multipart/form-data"})
-    public MediaList mediaUpload(int articleId, @RequestPart List<String> mentions, @RequestPart MultipartFile multipartFile) throws IOException {
-
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        String originalName = multipartFile.getOriginalFilename() + articleId + timestamp.getTime(); // 파일 이름
-        long size = multipartFile.getSize(); // 파일 크기
-
-        ObjectMetadata objectMetaData = new ObjectMetadata();
-        objectMetaData.setContentType(multipartFile.getContentType());
-        objectMetaData.setContentLength(size);
-
-        // S3에 업로드
-        amazonS3Client.putObject(
-                new PutObjectRequest(S3Bucket, originalName, multipartFile.getInputStream(), objectMetaData)
-                        .withCannedAcl(CannedAccessControlList.PublicRead)
-        );
-
-        String imagePath = amazonS3Client.getUrl(S3Bucket, originalName).toString(); // 접근가능한 URL 가져오기
-
-        MediaList media = mediaService.mediaUploadService(imagePath, mentions ,articleId);
-        return media;
-    }
-
-    @GetMapping
-    public MediaList mediaShow(int articleId){
-        MediaList media = mediaService.mediaShowService(articleId);
-        return media;
+    @PostMapping("/article/{articleId}/media")
+    public ResponseEntity<Void> mediaUpload(@PathVariable Long articleId, @RequestPart MediaPostRequestDto body, @RequestPart MultipartFile file) throws IOException {
+        mediaService.uploadMedia(articleId, body, file);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
-    @DeleteMapping
-    public MediaList mediaDelete(Optional<Integer> articleId, Optional<Integer> mediaId) {
-        MediaList result = mediaService.mediaDeleteService(articleId, mediaId);
-        try {
-            for (MediaDto media : result.getMedia()) {
-                amazonS3Client.deleteObject(S3Bucket, URLDecoder.decode(media.getUrl().replace("https://instapic-media.s3.ap-northeast-2.amazonaws.com/", ""), "UTF-8"));
-            }
-            return result;
-        }
-        catch (Exception e) {
-            System.out.println(e.getMessage());
-            return result;
-        }
+    @DeleteMapping("/media/{mediaId}")
+    public ResponseEntity<Void> mediaDelete(@PathVariable Long mediaId) {
+        mediaService.deleteMedia(mediaId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

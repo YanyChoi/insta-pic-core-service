@@ -1,49 +1,63 @@
 package com.instapic.coreservice.service;
 
-import com.instapic.coreservice.dto.media.MediaList;
+import com.instapic.coreservice.domain.Article;
+import com.instapic.coreservice.domain.Media;
+import com.instapic.coreservice.domain.MediaMention;
+import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.dto.request.media.MediaMentionPostRequestDto;
+import com.instapic.coreservice.dto.request.media.MediaPostRequestDto;
+import com.instapic.coreservice.repository.*;
 import com.instapic.coreservice.repository.MediaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.multipart.MultipartFile;
+import java.io.IOException;
+import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
+@PropertySource("aws.yaml")
 public class MediaService {
-    private MediaRepository mediaRepository;
 
-    @Autowired
-    public MediaService(MediaRepository mediaRepository) {
-        this.mediaRepository = mediaRepository;
+    private final UserRepository userRepository;
+    private final ArticleRepository articleRepository;
+    private final MediaRepository mediaRepository;
+    private final MediaMentionRepository mediaMentionRepository;
+    private final AmazonS3Repository amazonS3Repository;
+
+    @Value("${MEDIA_BUCKET_URL}")
+    private String mediaBucketUrl;
+
+    @Value("${THUMBNAIL_BUCKET_URL}")
+    private String thumbnailBucketUrl;
+    public void uploadMedia(Long articleId, MediaPostRequestDto dto, MultipartFile file) throws IOException, NoSuchElementException {
+        String url = amazonS3Repository.uploadObject(file, FileType.MEDIA);
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId));
+        Media media = Media.builder()
+                .url(mediaBucketUrl + "/" + dto.getMediaFormat() + "/" + url)
+                .mediaFormat(dto.getMediaFormat())
+                .article(article)
+                .thumbnail(thumbnailBucketUrl + "/" + dto)
+                .build();
+        mediaRepository.save(media);
+
+        for (MediaMentionPostRequestDto mentionDto : dto.getMentions()) {
+            User user = userRepository.findById(mentionDto.getUserId()).orElseThrow(() -> new NoSuchElementException("No such user with ID " + mentionDto.getUserId()));
+            MediaMention mention = MediaMention.builder()
+                    .media(media)
+                    .user(user)
+                    .xPosition(mentionDto.getXPosition())
+                    .yPosition(mentionDto.getYPosition())
+                    .build();
+            mediaMentionRepository.save(mention);
+        }
+    }
+    public void deleteMedia(Long mediaId) {
+        Media media = mediaRepository.findById(mediaId).orElseThrow(() -> new NoSuchElementException("No such media with ID " + mediaId));
+        amazonS3Repository.deleteObject(FileType.MEDIA, media.getUrl().replace(mediaBucketUrl, ""));
+        mediaRepository.delete(media);
     }
 
-    public MediaList mediaShowService(int articleId){
-        // List<MediaDto> result = (List<MediaDto>) mediaRepository.readMediaByArticleId(articleId).get();
-        MediaList result = new MediaList();
-        result.setMedia(mediaRepository.readMediaByArticleId(articleId));
-        result.setCount(result.getMedia().size());
-        return result;
-    }
-
-    public MediaList mediaDeleteService(Optional<Integer> articleId, Optional<Integer> mediaId){
-        MediaList result = new MediaList();
-        if (articleId.isEmpty()) {
-            result.setMedia(mediaRepository.deleteSeparateMedia(mediaId.get().intValue()));
-        }
-        else {
-            result.setMedia(mediaRepository.deleteAllMedia(articleId.get().intValue()));
-        }
-        result.setCount(result.getMedia().size());
-        return result;
-    }
-    public MediaList mediaUploadService(String url, List<String> mentions ,int articleId){
-        MediaList result = new MediaList();
-        // String cdnUrl = url.replace("https://instapic-media.s3.ap-northeast-2.amazonaws.com/", "https://ds27ztqt2rer0.cloudfront.net/");
-        boolean upload = mediaRepository.uploadMedia(url, mentions ,articleId);
-        if (upload){
-            result.setMedia(mediaRepository.readMediaByArticleId(articleId));
-        }
-        result.setCount(result.getMedia().size());
-        return result;
-    }
 }
