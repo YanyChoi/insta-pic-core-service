@@ -13,7 +13,7 @@ import java.util.List;
 @Getter @Setter @Builder
 public class ArticleDetailResponseDto {
     private Long articleId;
-    private UserPreviewResponseDto user;
+    private UserPreviewResponseDto author;
     private String location;
     private String text;
     private List<MediaResponseDto> mediaList;

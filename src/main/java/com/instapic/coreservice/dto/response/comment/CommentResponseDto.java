@@ -12,7 +12,7 @@ import java.util.List;
 public class CommentResponseDto {
     private Long commentId;
     private Long articleId;
-    private UserPreviewResponseDto user;
+    private UserPreviewResponseDto author;
     private String text;
     private List<UserPreviewResponseDto> mentionedUsers;
     private List<CommentResponseDto> childComments;

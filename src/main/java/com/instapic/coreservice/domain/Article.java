@@ -1,6 +1,8 @@
 package com.instapic.coreservice.domain;
 
 import com.instapic.coreservice.domain.like.ArticleLike;
+import com.instapic.coreservice.dto.response.article.ArticleDetailResponseDto;
+import com.instapic.coreservice.dto.response.article.ArticlePreviewResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,10 +22,6 @@ public class Article extends BaseEntity {
     @JoinColumn(name = "author_id")
     private User author;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "thumbnail_id")
-    private Thumbnail thumbnail;
-
     private String location;
 
     private String text;
@@ -40,10 +38,34 @@ public class Article extends BaseEntity {
     public Article() {
     }
     @Builder
-    public Article(User author, Thumbnail thumbnail, String location, String text) {
+    public Article(User author, String location, String text) {
         this.author = author;
-        this.thumbnail = thumbnail;
         this.location = location;
         this.text = text;
+    }
+
+    public ArticleDetailResponseDto toDetailedDto() {
+        return ArticleDetailResponseDto.builder()
+                .articleId(articleId)
+                .author(author.toPreviewDto())
+                .location(location)
+                .text(text)
+                .mediaList(mediaList.stream().map(Media::toDto).toList())
+                .likes(likes.stream().map(like -> like.getUser().toPreviewDto()).toList())
+                .comments(comments.stream().map(Comment::toDto).toList())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
+    }
+
+    public ArticlePreviewResponseDto toPreviewDto() {
+        return ArticlePreviewResponseDto.builder()
+                .articleId(articleId)
+                .author(author.toPreviewDto())
+                .likeCount(likes.size())
+                .commentCount(comments.size())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
     }
 }

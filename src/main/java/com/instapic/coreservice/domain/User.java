@@ -2,6 +2,7 @@ package com.instapic.coreservice.domain;
 
 import com.instapic.coreservice.domain.like.ArticleLike;
 import com.instapic.coreservice.domain.like.CommentLike;
+import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -20,6 +21,10 @@ public class User extends BaseEntity {
     private String userName;
 
     private String pw;
+
+    private String bio;
+
+    private String url;
 
     private String fullName;
 
@@ -53,10 +58,24 @@ public class User extends BaseEntity {
     public User() {
     }
     @Builder
-    public User(String userName, String pw, String fullName, String profilePictureUrl) {
+    public User(String userName, String pw, String bio, String url, String fullName, String profilePictureUrl) {
         this.userName = userName;
         this.pw = pw;
+        this.bio = bio;
+        this.url = url;
         this.fullName = fullName;
         this.profilePictureUrl = profilePictureUrl;
+    }
+    public UserPreviewResponseDto toPreviewDto() {
+        return UserPreviewResponseDto.builder()
+                .userId(userId)
+                .userName(userName)
+                .fullName(fullName)
+                .profilePictureUrl(profilePictureUrl)
+                .followingCount(followingList.size())
+                .followedByCount(followedByList.size())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
     }
 }

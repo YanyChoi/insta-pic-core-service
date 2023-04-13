@@ -9,7 +9,6 @@ public class UserPostRequestDto {
     private String userName;
     private String fullName;
     private String pw;
-    private String profilePictureUrl;
     private String bio;
     private String url;
 }

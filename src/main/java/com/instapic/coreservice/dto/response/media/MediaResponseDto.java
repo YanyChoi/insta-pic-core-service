@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 public class MediaResponseDto {
     private Long mediaId;
     private String url;
+    private String thumbnail;
     private MediaFormat mediaFormat;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

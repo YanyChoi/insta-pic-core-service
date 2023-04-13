@@ -1,6 +1,7 @@
 package com.instapic.coreservice.domain;
 
 import com.instapic.coreservice.domain.like.CommentLike;
+import com.instapic.coreservice.dto.response.comment.CommentResponseDto;
 import lombok.Builder;
 
 import javax.persistence.*;
@@ -40,5 +41,18 @@ public class Comment extends BaseEntity {
         this.author = author;
         this.text = text;
         this.parentComment = parentComment;
+    }
+
+    public CommentResponseDto toDto() {
+        return CommentResponseDto.builder()
+                .commentId(commentId)
+                .articleId(article.getArticleId())
+                .author(author.toPreviewDto())
+                .text(text)
+                .mentionedUsers(mentions.stream().map(mention -> mention.getUser().toPreviewDto()).toList())
+                .childComments(childComments.stream().map(Comment::toDto).toList())
+                .createdAt(getCreatedAt())
+                .updatedAt(getUpdatedAt())
+                .build();
     }
 }

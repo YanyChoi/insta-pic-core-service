@@ -8,5 +8,4 @@ import lombok.Setter;
 public class ArticlePostRequestDto {
     private String location;
     private String text;
-    private String thumbnail;
 }

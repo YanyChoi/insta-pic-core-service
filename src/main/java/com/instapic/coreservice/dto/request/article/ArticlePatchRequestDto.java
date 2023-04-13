@@ -8,5 +8,4 @@ import lombok.Setter;
 public class ArticlePatchRequestDto {
     private String location;
     private String text;
-    private String thumbnail;
 }
