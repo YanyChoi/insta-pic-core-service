@@ -1,53 +1,47 @@
 package com.instapic.coreservice.service;
 
-import com.instapic.coreservice.dto.comment.CommentDto;
-import com.instapic.coreservice.dto.comment.CommentList;
+import com.instapic.coreservice.domain.Article;
+import com.instapic.coreservice.domain.Comment;
+import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.dto.request.comment.CommentPostRequestDto;
+import com.instapic.coreservice.dto.response.comment.CommentResponseDto;
+import com.instapic.coreservice.repository.ArticleRepository;
+import com.instapic.coreservice.repository.UserRepository;
 import com.instapic.coreservice.repository.CommentRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
+@RequiredArgsConstructor
 public class CommentService {
 
-    private CommentRepository commentRepository;
-
-    public CommentService(CommentRepository commentRepository) {
-        this.commentRepository = commentRepository;
+    private final CommentRepository commentRepository;
+    private final UserRepository userRepository;
+    private final ArticleRepository articleRepository;
+    @Transactional
+    public void createComment(CommentPostRequestDto dto, Long articleId) throws NoSuchElementException {
+        User author = userRepository.findById(dto.getUserId()).orElseThrow(() -> new NoSuchElementException("No such user with ID " + dto.getUserId()));
+        Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId));
+        Comment comment = Comment.builder()
+                .article(article)
+                .author(author)
+                .text(dto.getText())
+                .build();
+        commentRepository.save(comment);
     }
 
-    public CommentDto postComment(CommentDto comment) {
-        CommentDto result = commentRepository.postComment(comment).get();
-        if (comment.getMentionedId() != null && !comment.getMentionedId().isEmpty()) {
-            CommentDto mention = commentRepository.postCommentMention(result.getCommentId(), comment.getMentionedId()).get();
-            result.setMentionedId(mention.getMentionedId());
-        }
-        return result;
+    public List<CommentResponseDto> getCommentsByArticle(Long articleId, Long lastCommentId, int size) {
+        return commentRepository.findCommentsWithArticleId(articleId, lastCommentId, size)
+                .stream().map(Comment::toDto)
+                .toList();
     }
 
-    public CommentList deleteComment(Optional<Integer> commentId, Optional<Integer> articleId) {
-        CommentList result = new CommentList();
-        if (commentId.isPresent()) {
-            result.setComments(commentRepository.deleteCommentByCommentId(commentId.get().intValue()));
-        }
-        else if (articleId.isPresent()) {
-            result.setComments(commentRepository.deleteCommentByArticleId(articleId.get().intValue()));
-        }
-        result.setCount(result.getComments().size());
-        return result;
-    }
-
-    public CommentList getComments(int articleId) {
-        CommentList result = new CommentList();
-        List<CommentDto> rootComments = commentRepository.getRootCommentsByArticleId(articleId);
-        rootComments.forEach(comment ->  {
-            List<CommentDto> childComments = commentRepository.getChildCommentsByCommentId(comment.getCommentId());
-            comment.setChildComments(childComments);
-            comment.setChildCount(childComments.size());
-        });
-        result.setComments(rootComments);
-        result.setCount(result.getComments().size());
-        return result;
+    @Transactional
+    public void deleteComment(Long commentId) {
+        commentRepository.deleteById(commentId);
     }
 }

@@ -2,36 +2,38 @@ package com.instapic.coreservice.controller;
 
 import com.instapic.coreservice.dto.comment.CommentDto;
 import com.instapic.coreservice.dto.comment.CommentList;
+import com.instapic.coreservice.dto.request.comment.CommentPostRequestDto;
+import com.instapic.coreservice.dto.response.comment.CommentResponseDto;
 import com.instapic.coreservice.service.CommentService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/comment")
+@RequiredArgsConstructor
 public class CommentController {
 
-    private CommentService commentService;
+    private final CommentService commentService;
 
-    public CommentController(CommentService commentService) {
-        this.commentService = commentService;
+    @PostMapping("/article/{articleId}/comment")
+    public ResponseEntity<Void> postComment(@PathVariable Long articleId, @RequestBody CommentPostRequestDto comment) {
+        commentService.createComment(comment, articleId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @PostMapping
-    public CommentDto postComment(@RequestBody CommentDto comment) {
-        CommentDto result = commentService.postComment(comment);
-        return result;
+    @DeleteMapping("/comment/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable Long commentId) {
+        commentService.deleteComment(commentId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-    @DeleteMapping
-    public CommentList deleteComment(Optional<Integer> commentId, Optional<Integer> articleId) {
-        CommentList result = commentService.deleteComment(commentId, articleId);
-        return result;
-    }
-
-    @GetMapping
-    public CommentList getComments(int articleId) {
-        CommentList result = commentService.getComments(articleId);
-        return result;
+    @GetMapping("/article/{articleId}/comments")
+    public ResponseEntity<List<CommentResponseDto>> getComments(@PathVariable Long articleId, @RequestParam Long lastCommentId, @RequestParam int size) {
+        List<CommentResponseDto> result = commentService.getCommentsByArticle(articleId, lastCommentId, size);
+        return ResponseEntity.ok().body(result);
     }
 }
