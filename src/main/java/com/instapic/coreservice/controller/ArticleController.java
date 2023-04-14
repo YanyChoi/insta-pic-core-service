@@ -1,6 +1,7 @@
 package com.instapic.coreservice.controller;
 
 import com.instapic.coreservice.domain.Article;
+import com.instapic.coreservice.domain.User;
 import com.instapic.coreservice.dto.article.ArticleDto;
 import com.instapic.coreservice.dto.article.ArticleList;
 import com.instapic.coreservice.dto.request.article.ArticlePostRequestDto;
@@ -41,17 +42,34 @@ public class ArticleController {
     }
 
     @GetMapping("/user/{userId}/feed")
-    public ResponseEntity<Page<ArticleDetailResponseDto>> getArticleFeed(@PathVariable Long userId, @RequestParam int offset, @RequestParam int size) {
-        return ResponseEntity.ok().body(articleService.getFeedArticles(userId, offset, size));
+    public ResponseEntity<List<ArticleDetailResponseDto>> getArticleFeed(@PathVariable Long userId, @RequestParam Long lastArticleId, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getFeedArticles(userId, lastArticleId, size));
     }
 
     @GetMapping("/user/{userId}/articles")
-    public ResponseEntity<Page<ArticleDetailResponseDto>> getUserArticles(@PathVariable Long userId, @RequestParam int offset, @RequestParam int size) {
-        return ResponseEntity.ok().body(articleService.getUserArticles(userId, offset, size));
+    public ResponseEntity<List<ArticlePreviewResponseDto>> getUserArticles(@PathVariable Long userId, @RequestParam Long lastArticleId, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getUserArticles(userId, lastArticleId, size));
     }
 
     @GetMapping("/location/{location}/articles")
-    public ResponseEntity<Page<ArticleDetailResponseDto>> getLocationArticles(@PathVariable String location, @RequestParam int offset, @RequestParam int size) {
-        return ResponseEntity.ok().body(articleService.getLocationArticles(location, offset, size));
+    public ResponseEntity<List<ArticlePreviewResponseDto>> getLocationArticles(@PathVariable String location, @RequestParam Long lastArticleId, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getLocationArticles(location, lastArticleId, size));
+    }
+
+    @GetMapping("/article/{articleId}/likes")
+    public ResponseEntity<List<User>> getArticleLikeUsers(@PathVariable Long articleId, @RequestParam Long lastUserId, @RequestParam int size) {
+        return ResponseEntity.ok().body(articleService.getArticleLikes(articleId, lastUserId, size));
+    }
+
+    @PostMapping("/article/{articleId}/like")
+    public ResponseEntity<Void> postArticleLike(@PathVariable Long articleId, @RequestParam Long userId) {
+        articleService.createArticleLike(articleId, userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    @DeleteMapping("/article/{articleId}/like")
+    public ResponseEntity<Void> deleteArticleLike(@PathVariable Long articleId, @RequestParam Long userId) {
+        articleService.deleteArticleLike(articleId, userId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

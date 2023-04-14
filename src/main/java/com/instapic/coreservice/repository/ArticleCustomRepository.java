@@ -1,12 +1,15 @@
 package com.instapic.coreservice.repository;
 
 import com.instapic.coreservice.domain.Article;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.instapic.coreservice.domain.User;
+
+import java.util.List;
 
 public interface ArticleCustomRepository {
 
-    Page<Article> findFeedArticles(Long userId, Pageable pageable);
-    Page<Article> findUserArticles(Long userId, Pageable pageable);
-    Page<Article> findLocationArticles(String location, Pageable pageable);
+    List<Article> findFeedArticles(Long userId, Long lastArticleId, int size);
+    List<Article> findUserArticles(Long userId, Long lastArticleId, int size);
+    List<Article> findLocationArticles(String location, Long lastArticleId, int size);
+    List<User> findArticleLikeUsers(Long articleId, Long lastUserId, int size);
+
 }

@@ -2,18 +2,18 @@ package com.instapic.coreservice.service;
 
 import com.instapic.coreservice.domain.Article;
 import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.domain.like.ArticleLike;
 import com.instapic.coreservice.dto.request.article.ArticlePostRequestDto;
 import com.instapic.coreservice.dto.response.article.ArticleDetailResponseDto;
 import com.instapic.coreservice.dto.response.article.ArticlePreviewResponseDto;
+import com.instapic.coreservice.repository.ArticleLikeRepository;
 import com.instapic.coreservice.repository.UserRepository;
 import com.instapic.coreservice.repository.ArticleRepository;
-import com.instapic.coreservice.repository.revamped.FollowRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Service
@@ -22,7 +22,7 @@ public class ArticleService {
 
     private final ArticleRepository articleRepository;
     private final UserRepository userRepository;
-    private final FollowRepository followRepository;
+    private final ArticleLikeRepository articleLikeRepository;
 
     @Transactional
     public ArticlePreviewResponseDto createArticle(Long authorId, ArticlePostRequestDto articlePostRequestDto) throws NoSuchElementException {
@@ -36,25 +36,42 @@ public class ArticleService {
         return article.toPreviewDto();
     }
 
-    public Page<ArticleDetailResponseDto> getFeedArticles(Long userId, int offset, int size) throws NoSuchElementException{
-        PageRequest pageRequest = PageRequest.of(offset, size);
-        return articleRepository.findFeedArticles(userId, pageRequest).map(Article::toDetailedDto);
+    public List<ArticleDetailResponseDto> getFeedArticles(Long userId, Long lastArticleId, int size) throws NoSuchElementException{
+        return articleRepository.findFeedArticles(userId, lastArticleId, size).stream().map(Article::toDetailedDto).toList();
     }
 
-    public Page<ArticleDetailResponseDto> getUserArticles(Long userId, int offset, int size) throws NoSuchElementException{
-        PageRequest pageRequest = PageRequest.of(offset, size);
-        return articleRepository.findUserArticles(userId, pageRequest).map(Article::toDetailedDto);
+    public List<ArticlePreviewResponseDto> getUserArticles(Long userId, Long lastArticleId, int size) throws NoSuchElementException{
+        return articleRepository.findUserArticles(userId, lastArticleId, size).stream().map(Article::toPreviewDto).toList();
     }
 
-    public Page<ArticleDetailResponseDto> getLocationArticles(String location, int offset, int size) throws NoSuchElementException{
-        PageRequest pageRequest = PageRequest.of(offset, size);
-        return articleRepository.findLocationArticles(location, pageRequest).map(Article::toDetailedDto);
+    public List<ArticlePreviewResponseDto> getLocationArticles(String location, Long lastArticleId, int size) throws NoSuchElementException{
+        return articleRepository.findLocationArticles(location, lastArticleId, size).stream().map(Article::toPreviewDto).toList();
     }
 
     public ArticleDetailResponseDto getArticleById(Long articleId) throws NoSuchElementException {
         return articleRepository.findById(articleId)
                 .orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId))
                 .toDetailedDto();
+    }
+
+    public void createArticleLike(Long articleId, Long userId) throws NoSuchElementException {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
+        Article article = articleRepository.findById(articleId)
+                .orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId));
+        ArticleLike articleLike = ArticleLike.builder()
+                .article(article)
+                .user(user)
+                .build();
+        articleLikeRepository.save(articleLike);
+    }
+
+    public void deleteArticleLike(Long articleId, Long userId) throws NoSuchElementException {
+        articleLikeRepository.deleteArticleLikeByUserIdAndArticleId(userId, articleId);
+    }
+
+    public List<User> getArticleLikes(Long articleId, Long lastUserId, int size) {
+        return articleLikeRepository.findArticleLikesByArticleId(articleId, lastUserId, size);
     }
 
     @Transactional
