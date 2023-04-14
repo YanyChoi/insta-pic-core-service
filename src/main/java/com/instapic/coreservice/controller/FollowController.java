@@ -3,43 +3,47 @@ package com.instapic.coreservice.controller;
 import com.instapic.coreservice.dto.follow.FollowDto;
 import com.instapic.coreservice.dto.follow.FollowList;
 import com.instapic.coreservice.dto.follow.NeighborList;
+import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import com.instapic.coreservice.service.FollowService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/follow")
+@RequiredArgsConstructor
+@RequestMapping("/user/{userId}")
 public class FollowController {
 
-    private FollowService followService;
-    @Autowired
-    public FollowController(FollowService followService) {
-        this.followService = followService;
+    private final FollowService followService;
+
+    @PostMapping("/follow/{targetId}")
+    public ResponseEntity<Void> follow(@PathVariable Long userId, @PathVariable Long targetId) {
+        followService.follow(userId, targetId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
-    @PostMapping
-    public FollowDto follow(String userId, String followId) {
-        FollowDto result = followService.follow(userId, followId);
-        return result;
-    }
-    @DeleteMapping
-    public FollowDto unfollow(String userId, String followId) {
-        FollowDto result = followService.unfollow(userId, followId);
-        return result;
+    @DeleteMapping("/follow/{targetId}")
+    public ResponseEntity<Void> unfollow(@PathVariable Long userId, @PathVariable Long targetId) {
+        followService.unFollow(userId, targetId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     @GetMapping("/followers")
-    public FollowList getFollowers(String followingId) {
-        FollowList result = followService.getFollowers(followingId);
-        return result;
+    public ResponseEntity<List<UserPreviewResponseDto>> getFollowers(@PathVariable Long userId, @RequestParam Long lastTargetId, @RequestParam int size) {
+        List<UserPreviewResponseDto> followers = followService.getFollowerList(userId, lastTargetId, size);
+        return ResponseEntity.ok().body(followers);
     }
     @GetMapping("/following")
-    public FollowList getFollowing(String userId) {
-        FollowList result = followService.getFollowing(userId);
-        return result;
+    public ResponseEntity<List<UserPreviewResponseDto>> getFollowing(@PathVariable Long userId, @RequestParam Long lastUserId, @RequestParam int size) {
+        List<UserPreviewResponseDto> followedByList = followService.getFollowedByList(userId, lastUserId, size);
+        return ResponseEntity.ok().body(followedByList);
     }
-    @GetMapping("/neighbors")
-    public NeighborList getNeighbors(String userId, String followingId) {
-        NeighborList result = followService.getNeighbors(userId, followingId);
-        return result;
+    @GetMapping("/mutual/{targetId}")
+    public ResponseEntity<List<UserPreviewResponseDto>> getMutualFollowers(@PathVariable Long userId, @PathVariable Long targetId) {
+        List<UserPreviewResponseDto> mutualFollowers = followService.getMutualFollowerList(userId, targetId);
+        return ResponseEntity.ok().body(mutualFollowers);
     }
 }
