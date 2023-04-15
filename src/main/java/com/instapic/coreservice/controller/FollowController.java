@@ -1,12 +1,8 @@
 package com.instapic.coreservice.controller;
 
-import com.instapic.coreservice.dto.follow.FollowDto;
-import com.instapic.coreservice.dto.follow.FollowList;
-import com.instapic.coreservice.dto.follow.NeighborList;
 import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import com.instapic.coreservice.service.FollowService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -1,23 +1,17 @@
 package com.instapic.coreservice.controller;
 
-import com.instapic.coreservice.domain.Article;
 import com.instapic.coreservice.domain.User;
-import com.instapic.coreservice.dto.article.ArticleDto;
-import com.instapic.coreservice.dto.article.ArticleList;
 import com.instapic.coreservice.dto.request.article.ArticlePostRequestDto;
 import com.instapic.coreservice.dto.response.article.ArticleDetailResponseDto;
 import com.instapic.coreservice.dto.response.article.ArticlePreviewResponseDto;
+import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import com.instapic.coreservice.service.ArticleService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -57,7 +51,7 @@ public class ArticleController {
     }
 
     @GetMapping("/article/{articleId}/likes")
-    public ResponseEntity<List<User>> getArticleLikeUsers(@PathVariable Long articleId, @RequestParam Long lastUserId, @RequestParam int size) {
+    public ResponseEntity<List<UserPreviewResponseDto>> getArticleLikeUsers(@PathVariable Long articleId, @RequestParam Long lastUserId, @RequestParam int size) {
         return ResponseEntity.ok().body(articleService.getArticleLikes(articleId, lastUserId, size));
     }
 
