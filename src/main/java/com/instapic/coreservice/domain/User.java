@@ -2,6 +2,7 @@ package com.instapic.coreservice.domain;
 
 import com.instapic.coreservice.domain.like.ArticleLike;
 import com.instapic.coreservice.domain.like.CommentLike;
+import com.instapic.coreservice.dto.request.user.UserPatchRequestDto;
 import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import lombok.Builder;
 import lombok.Getter;
@@ -77,5 +78,29 @@ public class User extends BaseEntity {
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setPw(String pw) {
+        this.pw = pw;
+    }
+
+    public void setBio(String bio) {
+        this.bio = bio;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl) {
+        this.profilePictureUrl = profilePictureUrl;
     }
 }

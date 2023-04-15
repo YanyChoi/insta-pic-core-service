@@ -4,12 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.Optional;
+
 @Getter @Setter @Builder
 public class UserPatchRequestDto {
-    private String userName;
-    private String fullName;
-    private String pw;
-    private String profilePictureUrl;
-    private String bio;
-    private String url;
+    private Optional<String> userName;
+    private Optional<String> fullName;
+    private Optional<String> pw;
+    private Optional<String> profilePictureUrl;
+    private Optional<String> bio;
+    private Optional<String> url;
 }
