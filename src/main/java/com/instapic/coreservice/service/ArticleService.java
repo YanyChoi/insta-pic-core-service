@@ -6,6 +6,7 @@ import com.instapic.coreservice.domain.like.ArticleLike;
 import com.instapic.coreservice.dto.request.article.ArticlePostRequestDto;
 import com.instapic.coreservice.dto.response.article.ArticleDetailResponseDto;
 import com.instapic.coreservice.dto.response.article.ArticlePreviewResponseDto;
+import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import com.instapic.coreservice.repository.ArticleLikeRepository;
 import com.instapic.coreservice.repository.UserRepository;
 import com.instapic.coreservice.repository.ArticleRepository;
@@ -54,6 +55,12 @@ public class ArticleService {
                 .toDetailedDto();
     }
 
+    @Transactional
+    public void deleteArticle(Long articleId) {
+        articleRepository.deleteById(articleId);
+    }
+
+    @Transactional
     public void createArticleLike(Long articleId, Long userId) throws NoSuchElementException {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
@@ -65,18 +72,15 @@ public class ArticleService {
                 .build();
         articleLikeRepository.save(articleLike);
     }
-
+    @Transactional
     public void deleteArticleLike(Long articleId, Long userId) throws NoSuchElementException {
         articleLikeRepository.deleteArticleLikeByUserIdAndArticleId(userId, articleId);
     }
 
-    public List<User> getArticleLikes(Long articleId, Long lastUserId, int size) {
-        return articleLikeRepository.findArticleLikesByArticleId(articleId, lastUserId, size);
-    }
-
-    @Transactional
-    public void deleteArticle(Long articleId) {
-        articleRepository.deleteById(articleId);
+    public List<UserPreviewResponseDto> getArticleLikes(Long articleId, Long lastUserId, int size) {
+        return articleLikeRepository.findArticleLikesByArticleId(articleId, lastUserId, size)
+                .stream().map(User::toPreviewDto)
+                .toList();
     }
 
 }

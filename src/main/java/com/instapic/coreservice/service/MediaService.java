@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.transaction.Transactional;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 
@@ -32,6 +34,7 @@ public class MediaService {
 
     @Value("${THUMBNAIL_BUCKET_URL}")
     private String thumbnailBucketUrl;
+    @Transactional
     public void uploadMedia(Long articleId, MediaPostRequestDto dto, MultipartFile file) throws IOException, NoSuchElementException {
         String url = amazonS3Repository.uploadObject(file, FileType.MEDIA);
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId));
@@ -54,6 +57,7 @@ public class MediaService {
             mediaMentionRepository.save(mention);
         }
     }
+    @Transactional
     public void deleteMedia(Long mediaId) {
         Media media = mediaRepository.findById(mediaId).orElseThrow(() -> new NoSuchElementException("No such media with ID " + mediaId));
         amazonS3Repository.deleteObject(FileType.MEDIA, media.getUrl().replace(mediaBucketUrl, ""));
