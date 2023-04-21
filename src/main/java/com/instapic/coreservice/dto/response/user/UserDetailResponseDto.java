@@ -15,8 +15,8 @@ public class UserDetailResponseDto {
     private String profilePictureUrl;
     private String bio;
     private String url;
-    private Long followingCount;
-    private Long followedByCount;
+    private int followingCount;
+    private int followedByCount;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

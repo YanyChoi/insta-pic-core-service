@@ -9,7 +9,6 @@ import java.util.List;
 
 @Getter @Setter @Builder
 public class MediaPostRequestDto {
-    private String url;
     private MediaFormat mediaFormat;
     private List<MediaMentionPostRequestDto> mentions;
 }

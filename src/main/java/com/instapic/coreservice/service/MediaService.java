@@ -3,7 +3,7 @@ package com.instapic.coreservice.service;
 import com.instapic.coreservice.domain.Article;
 import com.instapic.coreservice.domain.Media;
 import com.instapic.coreservice.domain.MediaMention;
-import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.domain.UserInfo;
 import com.instapic.coreservice.dto.request.media.MediaMentionPostRequestDto;
 import com.instapic.coreservice.dto.request.media.MediaPostRequestDto;
 import com.instapic.coreservice.repository.*;
@@ -23,7 +23,7 @@ import java.util.NoSuchElementException;
 @PropertySource("aws.yaml")
 public class MediaService {
 
-    private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
     private final ArticleRepository articleRepository;
     private final MediaRepository mediaRepository;
     private final MediaMentionRepository mediaMentionRepository;
@@ -47,10 +47,10 @@ public class MediaService {
         mediaRepository.save(media);
 
         for (MediaMentionPostRequestDto mentionDto : dto.getMentions()) {
-            User user = userRepository.findById(mentionDto.getUserId()).orElseThrow(() -> new NoSuchElementException("No such user with ID " + mentionDto.getUserId()));
+            UserInfo userInfo = userInfoRepository.findById(mentionDto.getUserId()).orElseThrow(() -> new NoSuchElementException("No such user with ID " + mentionDto.getUserId()));
             MediaMention mention = MediaMention.builder()
                     .media(media)
-                    .user(user)
+                    .user(userInfo)
                     .xPosition(mentionDto.getXPosition())
                     .yPosition(mentionDto.getYPosition())
                     .build();

@@ -20,7 +20,7 @@ public class Article extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    private User author;
+    private UserInfo author;
 
     private String location;
 
@@ -38,7 +38,7 @@ public class Article extends BaseEntity {
     public Article() {
     }
     @Builder
-    public Article(User author, String location, String text) {
+    public Article(UserInfo author, String location, String text) {
         this.author = author;
         this.location = location;
         this.text = text;
@@ -51,8 +51,6 @@ public class Article extends BaseEntity {
                 .location(location)
                 .text(text)
                 .mediaList(mediaList.stream().map(Media::toDto).toList())
-                .likes(likes.stream().map(like -> like.getUser().toPreviewDto()).toList())
-                .comments(comments.stream().map(Comment::toDto).toList())
                 .createdAt(getCreatedAt())
                 .updatedAt(getUpdatedAt())
                 .build();

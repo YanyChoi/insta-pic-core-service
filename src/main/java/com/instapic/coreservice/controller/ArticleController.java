@@ -1,6 +1,5 @@
 package com.instapic.coreservice.controller;
 
-import com.instapic.coreservice.domain.User;
 import com.instapic.coreservice.dto.request.article.ArticlePostRequestDto;
 import com.instapic.coreservice.dto.response.article.ArticleDetailResponseDto;
 import com.instapic.coreservice.dto.response.article.ArticlePreviewResponseDto;

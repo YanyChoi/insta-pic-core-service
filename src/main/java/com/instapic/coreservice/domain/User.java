@@ -1,106 +1,62 @@
 package com.instapic.coreservice.domain;
 
-import com.instapic.coreservice.domain.like.ArticleLike;
-import com.instapic.coreservice.domain.like.CommentLike;
-import com.instapic.coreservice.dto.request.user.UserPatchRequestDto;
-import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
 import lombok.Builder;
 import lombok.Getter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
-@Entity
 @Getter
-@Table(name = "user")
-public class User extends BaseEntity {
+@Entity
+public class User implements UserDetails {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Long id;
 
-    private String userName;
+    @Column(unique = true, nullable = false)
+    private String username;
 
-    private String pw;
+    @Column(nullable = false)
+    private String password;
 
-    private String bio;
-
-    private String url;
-
-    private String fullName;
-
-    private String profilePictureUrl;
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Article> articles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "author", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<CommentMention> commentMentions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<MediaMention> mediaMentions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<ArticleLike> likedArticles = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<CommentLike> likedComments = new ArrayList<>();
-
-    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Follow> followingList = new ArrayList<>();
-
-    @OneToMany(mappedBy = "target", cascade = CascadeType.REMOVE, orphanRemoval = true)
-    private List<Follow> followedByList = new ArrayList<>();
-
+    private UserRole userRole;
 
     public User() {
     }
+
     @Builder
-    public User(String userName, String pw, String bio, String url, String fullName, String profilePictureUrl) {
-        this.userName = userName;
-        this.pw = pw;
-        this.bio = bio;
-        this.url = url;
-        this.fullName = fullName;
-        this.profilePictureUrl = profilePictureUrl;
-    }
-    public UserPreviewResponseDto toPreviewDto() {
-        return UserPreviewResponseDto.builder()
-                .userId(userId)
-                .userName(userName)
-                .fullName(fullName)
-                .profilePictureUrl(profilePictureUrl)
-                .followingCount(followingList.size())
-                .followedByCount(followedByList.size())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
-                .build();
+    public User(String username, String password, UserRole userRole) {
+        this.username = username;
+        this.password = password;
+        this.userRole = userRole;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(userRole.toString()));
     }
 
-    public void setPw(String pw) {
-        this.pw = pw;
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
     }
 
-    public void setFullName(String fullName) {
-        this.fullName = fullName;
-    }
-
-    public void setProfilePictureUrl(String profilePictureUrl) {
-        this.profilePictureUrl = profilePictureUrl;
+    @Override
+    public boolean isEnabled() {
+        return true;
     }
 }

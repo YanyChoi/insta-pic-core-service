@@ -19,7 +19,7 @@ public class MediaMention extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserInfo user;
 
     private float xPosition;
     private float yPosition;
@@ -27,7 +27,7 @@ public class MediaMention extends BaseEntity {
     public MediaMention() {
     }
     @Builder
-    public MediaMention(Media media, User user, float xPosition, float yPosition) {
+    public MediaMention(Media media, UserInfo user, float xPosition, float yPosition) {
         this.media = media;
         this.user = user;
         this.xPosition = xPosition;

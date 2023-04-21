@@ -2,7 +2,7 @@ package com.instapic.coreservice.domain.like;
 
 import com.instapic.coreservice.domain.BaseEntity;
 import com.instapic.coreservice.domain.Comment;
-import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.domain.UserInfo;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +18,7 @@ public class CommentLike extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserInfo user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "comment_id")
@@ -27,7 +27,7 @@ public class CommentLike extends BaseEntity {
     public CommentLike() {
     }
     @Builder
-    public CommentLike(User user, Comment comment) {
+    public CommentLike(UserInfo user, Comment comment) {
         this.user = user;
         this.comment = comment;
     }

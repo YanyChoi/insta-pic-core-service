@@ -1,16 +1,21 @@
 package com.instapic.coreservice.service;
 
-import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.domain.UserInfo;
+import com.instapic.coreservice.dto.response.TokenResponseDto;
 import com.instapic.coreservice.dto.request.user.UserPatchRequestDto;
 import com.instapic.coreservice.dto.request.user.UserPostRequestDto;
 import com.instapic.coreservice.dto.response.user.UserDetailResponseDto;
+import com.instapic.coreservice.jwt.JwtTokenProvider;
 import com.instapic.coreservice.repository.AmazonS3Repository;
 import com.instapic.coreservice.repository.FileType;
-import com.instapic.coreservice.repository.UserRepository;
+import com.instapic.coreservice.repository.UserInfoRepository;
 import com.instapic.coreservice.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,77 +29,87 @@ import java.util.Optional;
 @PropertySource("aws.yaml")
 public class UserService {
 
-    private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
     private final FollowRepository followRepository;
     private final AmazonS3Repository amazonS3Repository;
+    private final AuthenticationManagerBuilder authenticationManagerBuilder;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${MEDIA_BUCKET_URL}")
     private String mediaBucketUrl;
 
+    @Transactional
+    public TokenResponseDto login(String username, String password) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
+        Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
+        return jwtTokenProvider.generateToken(authentication);
+    }
+
     public UserDetailResponseDto getUserDetails(Long userId) throws NoSuchElementException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
-        Long followingCount = followRepository.countByUser(user);
-        Long followedByCount = followRepository.countByTarget(user);
+        UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
+        int followingCount = followRepository.countByUser(userInfo);
+        int followedByCount = followRepository.countByTarget(userInfo);
         return UserDetailResponseDto.builder()
-                .userId(user.getUserId())
-                .userName(user.getUserName())
-                .fullName(user.getFullName())
-                .profilePictureUrl(user.getProfilePictureUrl())
-                .url(user.getUrl())
-                .bio(user.getBio())
+                .userId(userInfo.getUserId())
+                .userName(userInfo.getUserName())
+                .fullName(userInfo.getFullName())
+                .profilePictureUrl(userInfo.getProfilePictureUrl())
+                .url(userInfo.getUrl())
+                .bio(userInfo.getBio())
                 .followingCount(followingCount)
                 .followedByCount(followedByCount)
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
+                .createdAt(userInfo.getCreatedAt())
+                .updatedAt(userInfo.getUpdatedAt())
                 .build();
     }
 
     public Long createUser(UserPostRequestDto dto, MultipartFile profilePicture) throws IOException {
-        User user = User.builder()
+        UserInfo userInfo = UserInfo.builder()
                 .userName(dto.getUserName())
                 .fullName(dto.getFullName())
-                .pw(dto.getPw())
                 .bio(dto.getBio())
                 .url(dto.getUrl())
                 .build();
-        uploadProfilePicture(user, profilePicture);
-        userRepository.save(user);
-        return user.getUserId();
+        uploadProfilePicture(userInfo, profilePicture);
+        userInfoRepository.save(userInfo);
+        return userInfo.getUserId();
     }
 
     @Transactional
     public void updateUser(Long userId, UserPatchRequestDto dto, Optional<MultipartFile> profilePicture) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
+        UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
         if (dto.getBio().isPresent()) {
-            user.setBio(dto.getBio().get());
+            userInfo.setBio(dto.getBio().get());
         }
         if (dto.getUserName().isPresent()) {
-            user.setUserName(dto.getUserName().get());
+            userInfo.setUserName(dto.getUserName().get());
         }
         if (dto.getFullName().isPresent()) {
-            user.setFullName(dto.getFullName().get());
+            userInfo.setFullName(dto.getFullName().get());
         }
         if (dto.getUrl().isPresent()) {
-            user.setUrl(dto.getUrl().get());
-        }
-        if (dto.getPw().isPresent()) {
-            user.setPw(dto.getPw().get());
+            userInfo.setUrl(dto.getUrl().get());
         }
         if (profilePicture.isPresent()) {
-            uploadProfilePicture(user, profilePicture.get());
+            uploadProfilePicture(userInfo, profilePicture.get());
         }
 
     }
 
-    private void uploadProfilePicture(User user, MultipartFile newProfilePicture) throws IOException {
-        if (!user.getProfilePictureUrl().isEmpty()) {
-            amazonS3Repository.deleteObject(FileType.PROFILE_PICTURE, user.getProfilePictureUrl().replace(mediaBucketUrl, ""));
+    private void uploadProfilePicture(UserInfo userInfo, MultipartFile newProfilePicture) throws IOException {
+        if (!userInfo.getProfilePictureUrl().isEmpty()) {
+            amazonS3Repository.deleteObject(FileType.PROFILE_PICTURE, userInfo.getProfilePictureUrl().replace(mediaBucketUrl, ""));
         }
         String newProfilePictureUrl = mediaBucketUrl + "/" + FileType.PROFILE_PICTURE + "/" + amazonS3Repository.uploadObject(newProfilePicture, FileType.PROFILE_PICTURE);
-        user.setProfilePictureUrl(newProfilePictureUrl);
+        userInfo.setProfilePictureUrl(newProfilePictureUrl);
     }
 
-//
+//    @Override
+//    @Transactional
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//    }
+
+    //
 //    public UserDto getUserInfoService(String userId) {
 //        UserDto result;
 //        result = userRepository.readUserById(userId).get();

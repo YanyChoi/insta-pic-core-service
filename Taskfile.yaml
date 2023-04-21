@@ -25,5 +25,5 @@ tasks:
   deploy:
     cmds:
       - ./gradlew build
-      - docker build -t yhc0818/insta-pic-core-service:latest --platform linux/amd64 .
-      - docker push yhc0818/insta-pic-core-service:latest
+      - docker build -t yhc0818/insta-pic-core-service:v1 --platform linux/amd64 .
+      - docker push yhc0818/insta-pic-core-service:v1

@@ -1,6 +1,6 @@
 package com.instapic.coreservice.repository;
 
-import com.instapic.coreservice.domain.User;
+import com.instapic.coreservice.domain.UserInfo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -23,7 +23,7 @@ public class CommentLikeCustomRepositoryImpl implements CommentLikeCustomReposit
     }
 
     @Override
-    public List<User> findCommentLikesByCommentId(Long commentId, Long lastUserId, int size) {
+    public List<UserInfo> findCommentLikesByCommentId(Long commentId, Long lastUserId, int size) {
         return jpaQueryFactory.select(commentLike.user)
                 .from(commentLike)
                 .where(commentLike.comment.commentId.eq(commentId)

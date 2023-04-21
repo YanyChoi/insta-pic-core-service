@@ -1,8 +1,10 @@
 package com.instapic.coreservice.controller;
 
 import com.amazonaws.services.s3.AmazonS3Client;
+import com.instapic.coreservice.dto.request.user.UserLoginRequestDto;
 import com.instapic.coreservice.dto.request.user.UserPatchRequestDto;
 import com.instapic.coreservice.dto.request.user.UserPostRequestDto;
+import com.instapic.coreservice.dto.response.TokenResponseDto;
 import com.instapic.coreservice.dto.response.user.UserDetailResponseDto;
 import com.instapic.coreservice.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -40,6 +43,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    @PostMapping("/login")
+    public TokenResponseDto login(@RequestBody UserLoginRequestDto dto) {
+        return userService.login(
+                dto.getUsername(),
+                dto.getPassword()
+        );
+    }
 
 //    @GetMapping("/login")
 //    public UserDto login(String id, String pw) {

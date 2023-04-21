@@ -15,16 +15,16 @@ public class Follow extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserInfo user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "target_id")
-    private User target;
+    private UserInfo target;
 
     public Follow() {
     }
     @Builder
-    public Follow(User user, User target) {
+    public Follow(UserInfo user, UserInfo target) {
         this.user = user;
         this.target = target;
     }

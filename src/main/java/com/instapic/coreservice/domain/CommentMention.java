@@ -19,12 +19,12 @@ public class CommentMention extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private User user;
+    private UserInfo user;
 
     public CommentMention() {
     }
     @Builder
-    public CommentMention(Comment comment, User user) {
+    public CommentMention(Comment comment, UserInfo user) {
         this.comment = comment;
         this.user = user;
     }

@@ -19,7 +19,7 @@ public class Comment extends BaseEntity {
     private Article article;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
-    private User author;
+    private UserInfo author;
     private String text;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
@@ -36,7 +36,7 @@ public class Comment extends BaseEntity {
     public Comment() {
     }
     @Builder
-    public Comment(Article article, User author, String text, Comment parentComment) {
+    public Comment(Article article, UserInfo author, String text, Comment parentComment) {
         this.article = article;
         this.author = author;
         this.text = text;

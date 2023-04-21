@@ -17,8 +17,6 @@ public class ArticleDetailResponseDto {
     private String location;
     private String text;
     private List<MediaResponseDto> mediaList;
-    private List<UserPreviewResponseDto> likes;
-    private List<CommentResponseDto> comments;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
