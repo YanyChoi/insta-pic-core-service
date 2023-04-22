@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.instapic.coreservice.domain.QFollow.follow;
 import static com.instapic.coreservice.domain.QUserInfo.userInfo;
@@ -25,38 +26,66 @@ public class FollowCustomRepositoryImpl implements FollowCustomRepository {
     }
 
     @Override
-    public List<UserInfo> findTargetsByUserId(Long userId, Long lastTargetId, int size) {
+    public List<UserInfo> findTargetsByUserId(Long userId, Optional<Long> lastTargetId, int size) {
+        if (lastTargetId.isPresent()) {
+            return jpaQueryFactory.select(follow.target)
+                    .from(follow)
+                    .join(follow.target, userInfo)
+                    .where(follow.user.userId.eq(userId)
+                            .and(follow.target.userId.gt(lastTargetId.get())))
+                    .limit(size)
+                    .fetch();
+        }
         return jpaQueryFactory.select(follow.target)
                 .from(follow)
                 .join(follow.target, userInfo)
-                .join(follow.user, userInfo)
-                .where(follow.user.userId.eq(userId)
-                        .and(follow.target.userId.gt(lastTargetId)))
-                .fetch();
-    }
-
-    @Override
-    public List<UserInfo> findUsersByTargetId(Long targetId, Long lastUserId, int size) {
-        return jpaQueryFactory.select(follow.user)
-                .from(follow)
-                .join(follow.target, userInfo)
-                .join(follow.user, userInfo)
-                .where(follow.target.userId.eq(targetId)
-                        .and(follow.user.userId.gt(lastUserId)))
+                .where(follow.user.userId.eq(userId))
                 .limit(size)
                 .fetch();
     }
 
     @Override
-    public List<UserInfo> findMutualFollowers(Long userId, Long targetId) {
+    public List<UserInfo> findUsersByTargetId(Long targetId, Optional<Long> lastUserId, int size) {
+        if (lastUserId.isPresent()) {
+            return jpaQueryFactory.select(follow.user)
+                    .from(follow)
+                    .join(follow.user, userInfo)
+                    .where(follow.target.userId.eq(targetId)
+                            .and(follow.user.userId.gt(lastUserId.get())))
+                    .limit(size)
+                    .fetch();
+        }
+        return jpaQueryFactory.select(follow.user)
+                .from(follow)
+                .join(follow.user, userInfo)
+                .where(follow.target.userId.eq(targetId))
+                .limit(size)
+                .fetch();
+    }
+
+    @Override
+    public List<UserInfo> findMutualFollowers(Long userId, Long targetId, Optional<Long> lastUserId, int size) {
         QFollow follow1 = new QFollow("follow1");
         QFollow follow2 = new QFollow("follow2");
+
+        if (lastUserId.isPresent()) {
+            return jpaQueryFactory.select(follow1.target)
+                    .from(follow1)
+                    .join(follow2)
+                    .on(follow1.target.userId.eq(follow2.user.userId))
+                    .where(follow1.user.userId.eq(userId)
+                            .and(follow2.target.userId.eq(targetId))
+                            .and(follow1.target.userId.gt(lastUserId.get())))
+                    .limit(size)
+                    .fetch();
+        }
         return jpaQueryFactory.select(follow1.target)
                 .from(follow1)
                 .join(follow2)
                 .on(follow1.target.userId.eq(follow2.user.userId))
                 .where(follow1.user.userId.eq(userId)
                         .and(follow2.target.userId.eq(targetId)))
+                .limit(size)
                 .fetch();
     }
 }

@@ -11,18 +11,19 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class FollowService {
 
     private final FollowRepository followRepository;
     private final UserInfoRepository userInfoRepository;
 
-    @Transactional
     public void follow(Long userId, Long targetId) throws NoSuchElementException {
         UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
-        UserInfo target = userInfoRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + targetId));
+        UserInfo target = userInfoRepository.findById(targetId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + targetId));
         Follow follow = Follow.builder()
                 .user(userInfo)
                 .target(target)
@@ -30,21 +31,20 @@ public class FollowService {
         followRepository.save(follow);
     }
 
-    @Transactional
     public void unFollow(Long userId, Long targetId) throws NoSuchElementException {
         followRepository.deleteByUserIdAndTargetId(userId, targetId);
     }
 
-    public List<UserPreviewResponseDto> getFollowerList(Long userId, Long lastTargetId, int size) {
+    public List<UserPreviewResponseDto> getFollowerList(Long userId, Optional<Long> lastTargetId, int size) {
         return followRepository.findTargetsByUserId(userId, lastTargetId, size).stream().map(UserInfo::toPreviewDto).toList();
     }
 
-    public List<UserPreviewResponseDto> getFollowedByList(Long targetId, Long lastUserId, int size) {
+    public List<UserPreviewResponseDto> getFollowedByList(Long targetId, Optional<Long> lastUserId, int size) {
         return followRepository.findUsersByTargetId(targetId, lastUserId, size).stream().map(UserInfo::toPreviewDto).toList();
     }
 
-    public List<UserPreviewResponseDto> getMutualFollowerList(Long userId, Long targetId) {
-        return followRepository.findMutualFollowers(userId, targetId).stream().map(UserInfo::toPreviewDto).toList();
+    public List<UserPreviewResponseDto> getMutualFollowerList(Long userId, Long targetId, Optional<Long> lastUserId, int size) {
+        return followRepository.findMutualFollowers(userId, targetId, lastUserId, size).stream().map(UserInfo::toPreviewDto).toList();
     }
 
 }

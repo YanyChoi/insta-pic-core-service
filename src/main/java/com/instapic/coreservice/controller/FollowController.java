@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,18 +29,18 @@ public class FollowController {
     }
 
     @GetMapping("/followers")
-    public ResponseEntity<List<UserPreviewResponseDto>> getFollowers(@PathVariable Long userId, @RequestParam Long lastTargetId, @RequestParam int size) {
+    public ResponseEntity<List<UserPreviewResponseDto>> getFollowers(@PathVariable Long userId, @RequestParam(required = false) Optional<Long> lastTargetId, @RequestParam int size) {
         List<UserPreviewResponseDto> followers = followService.getFollowerList(userId, lastTargetId, size);
         return ResponseEntity.ok().body(followers);
     }
     @GetMapping("/following")
-    public ResponseEntity<List<UserPreviewResponseDto>> getFollowing(@PathVariable Long userId, @RequestParam Long lastUserId, @RequestParam int size) {
+    public ResponseEntity<List<UserPreviewResponseDto>> getFollowing(@PathVariable Long userId, @RequestParam(required = false) Optional<Long> lastUserId, @RequestParam int size) {
         List<UserPreviewResponseDto> followedByList = followService.getFollowedByList(userId, lastUserId, size);
         return ResponseEntity.ok().body(followedByList);
     }
     @GetMapping("/mutual/{targetId}")
-    public ResponseEntity<List<UserPreviewResponseDto>> getMutualFollowers(@PathVariable Long userId, @PathVariable Long targetId) {
-        List<UserPreviewResponseDto> mutualFollowers = followService.getMutualFollowerList(userId, targetId);
+    public ResponseEntity<List<UserPreviewResponseDto>> getMutualFollowers(@PathVariable Long userId, @PathVariable Long targetId, @RequestParam(required = false) Optional<Long> lastUserId, @RequestParam int size) {
+        List<UserPreviewResponseDto> mutualFollowers = followService.getMutualFollowerList(userId, targetId, lastUserId, size);
         return ResponseEntity.ok().body(mutualFollowers);
     }
 }
