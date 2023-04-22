@@ -1,7 +1,8 @@
-package com.instapic.coreservice.repository;
+package com.instapic.coreservice.repository.amazon;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
+import com.instapic.coreservice.repository.media.FileType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;

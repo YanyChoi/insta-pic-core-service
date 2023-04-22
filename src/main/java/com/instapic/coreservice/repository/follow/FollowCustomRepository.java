@@ -1,4 +1,4 @@
-package com.instapic.coreservice.repository;
+package com.instapic.coreservice.repository.follow;
 
 import com.instapic.coreservice.domain.UserInfo;
 

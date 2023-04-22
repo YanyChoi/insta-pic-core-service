@@ -1,4 +1,4 @@
-package com.instapic.coreservice.repository;
+package com.instapic.coreservice.repository.user;
 
 import com.instapic.coreservice.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -1,4 +1,4 @@
-package com.instapic.coreservice.repository;
+package com.instapic.coreservice.repository.commentLike;
 
 import com.instapic.coreservice.domain.like.CommentLike;
 import org.springframework.data.jpa.repository.JpaRepository;

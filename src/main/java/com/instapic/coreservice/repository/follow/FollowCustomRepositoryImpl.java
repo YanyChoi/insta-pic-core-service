@@ -1,4 +1,4 @@
-package com.instapic.coreservice.repository;
+package com.instapic.coreservice.repository.follow;
 
 import com.instapic.coreservice.domain.QFollow;
 import com.instapic.coreservice.domain.UserInfo;
@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 import static com.instapic.coreservice.domain.QFollow.follow;
-import static com.instapic.coreservice.domain.QUser.user;
 import static com.instapic.coreservice.domain.QUserInfo.userInfo;
 
 @Repository

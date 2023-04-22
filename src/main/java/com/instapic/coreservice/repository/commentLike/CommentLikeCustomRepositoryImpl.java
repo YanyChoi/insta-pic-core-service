@@ -1,4 +1,4 @@
-package com.instapic.coreservice.repository;
+package com.instapic.coreservice.repository.commentLike;
 
 import com.instapic.coreservice.domain.UserInfo;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import static com.instapic.coreservice.domain.like.QCommentLike.commentLike;
 
@@ -23,11 +24,18 @@ public class CommentLikeCustomRepositoryImpl implements CommentLikeCustomReposit
     }
 
     @Override
-    public List<UserInfo> findCommentLikesByCommentId(Long commentId, Long lastUserId, int size) {
+    public List<UserInfo> findCommentLikesByCommentId(Long commentId, Optional<Long> lastUserId, int size) {
+        if (lastUserId.isPresent()) {
+            return jpaQueryFactory.select(commentLike.user)
+                    .from(commentLike)
+                    .where(commentLike.comment.commentId.eq(commentId)
+                            .and(commentLike.user.userId.gt(lastUserId.get())))
+                    .limit(size)
+                    .fetch();
+        }
         return jpaQueryFactory.select(commentLike.user)
                 .from(commentLike)
-                .where(commentLike.comment.commentId.eq(commentId)
-                        .and(commentLike.user.userId.gt(lastUserId)))
+                .where(commentLike.comment.commentId.eq(commentId))
                 .limit(size)
                 .fetch();
     }
