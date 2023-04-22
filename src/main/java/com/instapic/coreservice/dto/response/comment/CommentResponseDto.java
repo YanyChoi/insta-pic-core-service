@@ -13,9 +13,10 @@ public class CommentResponseDto {
     private Long commentId;
     private Long articleId;
     private UserPreviewResponseDto author;
+    private Long likeCount;
     private String text;
     private List<UserPreviewResponseDto> mentionedUsers;
     private List<CommentResponseDto> childComments;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
 }

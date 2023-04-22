@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final Key key;
-    private final long expirationTerm = 86400;
+    private final long expirationTerm = 86400000;
 
     public JwtTokenProvider(@Value("${jwt.secret}") String secretKey) {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
@@ -46,12 +46,12 @@ public class JwtTokenProvider {
                 .setExpiration(accessTokenExprirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
+        log.info("generate token : " + accessToken);
         String refreshToken = Jwts.builder()
                 .setExpiration(accessTokenExprirationDate)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
-
+        log.info("generate refresh token : " + refreshToken);
         return TokenResponseDto.builder()
                 .grantType("Bearer")
                 .accessToken(accessToken)

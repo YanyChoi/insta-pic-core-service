@@ -14,6 +14,6 @@ public class UserPreviewResponseDto {
     private String profilePictureUrl;
     private int followingCount;
     private int followedByCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
 }

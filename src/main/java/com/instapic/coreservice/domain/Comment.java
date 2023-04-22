@@ -21,6 +21,7 @@ public class Comment extends BaseEntity {
     @JoinColumn(name = "author_id")
     private UserInfo author;
     private String text;
+    private Long likeCount = 0L;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_comment_id")
     private Comment parentComment;
@@ -49,10 +50,19 @@ public class Comment extends BaseEntity {
                 .articleId(article.getArticleId())
                 .author(author.toPreviewDto())
                 .text(text)
+                .likeCount(likeCount)
                 .mentionedUsers(mentions.stream().map(mention -> mention.getUser().toPreviewDto()).toList())
                 .childComments(childComments.stream().map(Comment::toDto).toList())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
+                .createdAt(getCreatedAt().toString())
+                .updatedAt(getUpdatedAt().toString())
                 .build();
+    }
+
+    public Long increaseLike() {
+        return ++likeCount;
+    }
+
+    public Long decreaseLike() {
+        return --likeCount;
     }
 }

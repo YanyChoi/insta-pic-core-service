@@ -17,6 +17,6 @@ public class UserDetailResponseDto {
     private String url;
     private int followingCount;
     private int followedByCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private String createdAt;
+    private String updatedAt;
 }

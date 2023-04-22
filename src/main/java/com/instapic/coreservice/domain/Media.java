@@ -46,8 +46,9 @@ public class Media extends BaseEntity {
                 .url(url)
                 .thumbnail(thumbnail)
                 .mediaFormat(mediaFormat)
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
+                .mentions(mentions.stream().map(MediaMention::toDto).toList())
+                .createdAt(getCreatedAt().toString())
+                .updatedAt(getUpdatedAt().toString())
                 .build();
     }
 }

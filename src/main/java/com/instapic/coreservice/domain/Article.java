@@ -26,14 +26,12 @@ public class Article extends BaseEntity {
 
     private String text;
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
-    private final List<Comment> comments = new ArrayList<>();
-
     @OneToMany(mappedBy = "article")
     private final List<Media> mediaList = new ArrayList<>();
 
-    @OneToMany(mappedBy = "article", cascade = CascadeType.REMOVE)
-    private final List<ArticleLike> likes = new ArrayList<>();
+    private Long commentCount = 0L;
+
+    private Long likeCount = 0L;
 
     public Article() {
     }
@@ -51,8 +49,10 @@ public class Article extends BaseEntity {
                 .location(location)
                 .text(text)
                 .mediaList(mediaList.stream().map(Media::toDto).toList())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
+                .likeCount(likeCount)
+                .commentCount(commentCount)
+                .createdAt(getCreatedAt().toString())
+                .updatedAt(getUpdatedAt().toString())
                 .build();
     }
 
@@ -60,10 +60,26 @@ public class Article extends BaseEntity {
         return ArticlePreviewResponseDto.builder()
                 .articleId(articleId)
                 .author(author.toPreviewDto())
-                .likeCount(likes.size())
-                .commentCount(comments.size())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
+                .likeCount(likeCount)
+                .commentCount(commentCount)
+                .createdAt(getCreatedAt().toString())
+                .updatedAt(getUpdatedAt().toString())
                 .build();
+    }
+
+    public Long increaseLikeCount() {
+        return ++likeCount;
+    }
+
+    public Long decreaseLikeCount() {
+        return --likeCount;
+    }
+
+    public Long increaseCommentCount() {
+        return ++commentCount;
+    }
+
+    public Long decreaseCommentCount() {
+        return --commentCount;
     }
 }

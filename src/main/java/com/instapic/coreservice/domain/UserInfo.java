@@ -74,8 +74,8 @@ public class UserInfo extends BaseEntity {
                 .profilePictureUrl(profilePictureUrl)
                 .followingCount(followingList.size())
                 .followedByCount(followedByList.size())
-                .createdAt(getCreatedAt())
-                .updatedAt(getUpdatedAt())
+                .createdAt(getCreatedAt().toString())
+                .updatedAt(getUpdatedAt().toString())
                 .build();
     }
 

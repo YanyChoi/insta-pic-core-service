@@ -6,9 +6,14 @@ import com.instapic.coreservice.domain.MediaMention;
 import com.instapic.coreservice.domain.UserInfo;
 import com.instapic.coreservice.dto.request.media.MediaMentionPostRequestDto;
 import com.instapic.coreservice.dto.request.media.MediaPostRequestDto;
-import com.instapic.coreservice.repository.*;
-import com.instapic.coreservice.repository.MediaRepository;
+import com.instapic.coreservice.repository.media.FileType;
+import com.instapic.coreservice.repository.media.MediaMentionRepository;
+import com.instapic.coreservice.repository.media.MediaRepository;
+import com.instapic.coreservice.repository.amazon.AmazonS3Repository;
+import com.instapic.coreservice.repository.article.ArticleRepository;
+import com.instapic.coreservice.repository.user.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
@@ -16,8 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
 import java.io.IOException;
+import java.util.List;
 import java.util.NoSuchElementException;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @PropertySource("aws.yaml")
@@ -35,24 +42,25 @@ public class MediaService {
     @Value("${THUMBNAIL_BUCKET_URL}")
     private String thumbnailBucketUrl;
     @Transactional
-    public void uploadMedia(Long articleId, MediaPostRequestDto dto, MultipartFile file) throws IOException, NoSuchElementException {
+    public void uploadMedia(Long articleId, MediaPostRequestDto mediaDto, List<MediaMentionPostRequestDto> mentionsDto, MultipartFile file) throws IOException, NoSuchElementException {
         String url = amazonS3Repository.uploadObject(file, FileType.MEDIA);
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId));
         Media media = Media.builder()
-                .url(mediaBucketUrl + "/" + dto.getMediaFormat() + "/" + url)
-                .mediaFormat(dto.getMediaFormat())
+                .url(mediaBucketUrl + "/" + mediaDto.getMediaFormat() + "/" + url)
+                .mediaFormat(mediaDto.getMediaFormat())
                 .article(article)
-                .thumbnail(thumbnailBucketUrl + "/" + dto)
+                .thumbnail(thumbnailBucketUrl + "/" + mediaDto)
                 .build();
         mediaRepository.save(media);
 
-        for (MediaMentionPostRequestDto mentionDto : dto.getMentions()) {
+        for (MediaMentionPostRequestDto mentionDto : mentionsDto) {
+            log.info(mentionDto.toString());
             UserInfo userInfo = userInfoRepository.findById(mentionDto.getUserId()).orElseThrow(() -> new NoSuchElementException("No such user with ID " + mentionDto.getUserId()));
             MediaMention mention = MediaMention.builder()
                     .media(media)
                     .user(userInfo)
-                    .xPosition(mentionDto.getXPosition())
-                    .yPosition(mentionDto.getYPosition())
+                    .xPosition(mentionDto.getX())
+                    .yPosition(mentionDto.getY())
                     .build();
             mediaMentionRepository.save(mention);
         }

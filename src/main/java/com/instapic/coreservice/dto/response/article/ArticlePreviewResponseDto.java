@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 public class ArticlePreviewResponseDto {
     private Long articleId;
     private UserPreviewResponseDto author;
-    private int likeCount;
-    private int commentCount;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Long likeCount;
+    private Long commentCount;
+    private String createdAt;
+    private String updatedAt;
 }

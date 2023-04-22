@@ -1,21 +1,26 @@
 package com.instapic.coreservice.service;
 
+import com.instapic.coreservice.domain.User;
 import com.instapic.coreservice.domain.UserInfo;
+import com.instapic.coreservice.domain.UserRole;
 import com.instapic.coreservice.dto.response.TokenResponseDto;
 import com.instapic.coreservice.dto.request.user.UserPatchRequestDto;
 import com.instapic.coreservice.dto.request.user.UserPostRequestDto;
 import com.instapic.coreservice.dto.response.user.UserDetailResponseDto;
 import com.instapic.coreservice.jwt.JwtTokenProvider;
-import com.instapic.coreservice.repository.AmazonS3Repository;
-import com.instapic.coreservice.repository.FileType;
-import com.instapic.coreservice.repository.UserInfoRepository;
-import com.instapic.coreservice.repository.FollowRepository;
+import com.instapic.coreservice.repository.amazon.AmazonS3Repository;
+import com.instapic.coreservice.repository.follow.FollowRepository;
+import com.instapic.coreservice.repository.media.FileType;
+import com.instapic.coreservice.repository.user.UserInfoRepository;
+import com.instapic.coreservice.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -24,6 +29,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @PropertySource("aws.yaml")
@@ -34,12 +40,15 @@ public class UserService {
     private final AmazonS3Repository amazonS3Repository;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Value("${MEDIA_BUCKET_URL}")
     private String mediaBucketUrl;
 
     @Transactional
     public TokenResponseDto login(String username, String password) {
+        System.out.println("start login");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
         return jwtTokenProvider.generateToken(authentication);
@@ -58,8 +67,8 @@ public class UserService {
                 .bio(userInfo.getBio())
                 .followingCount(followingCount)
                 .followedByCount(followedByCount)
-                .createdAt(userInfo.getCreatedAt())
-                .updatedAt(userInfo.getUpdatedAt())
+                .createdAt(userInfo.getCreatedAt().toString())
+                .updatedAt(userInfo.getUpdatedAt().toString())
                 .build();
     }
 
@@ -72,7 +81,13 @@ public class UserService {
                 .build();
         uploadProfilePicture(userInfo, profilePicture);
         userInfoRepository.save(userInfo);
-        return userInfo.getUserId();
+        User user = User.builder()
+                .username(dto.getUserName())
+                .password(passwordEncoder.encode(dto.getPw()))
+                .userRole(UserRole.MEMBER)
+                .build();
+        userRepository.save(user);
+        return user.getId();
     }
 
     @Transactional
@@ -97,7 +112,7 @@ public class UserService {
     }
 
     private void uploadProfilePicture(UserInfo userInfo, MultipartFile newProfilePicture) throws IOException {
-        if (!userInfo.getProfilePictureUrl().isEmpty()) {
+        if (userInfo.getProfilePictureUrl() != null) {
             amazonS3Repository.deleteObject(FileType.PROFILE_PICTURE, userInfo.getProfilePictureUrl().replace(mediaBucketUrl, ""));
         }
         String newProfilePictureUrl = mediaBucketUrl + "/" + FileType.PROFILE_PICTURE + "/" + amazonS3Repository.uploadObject(newProfilePicture, FileType.PROFILE_PICTURE);

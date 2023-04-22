@@ -3,8 +3,8 @@ package com.instapic.coreservice.service;
 import com.instapic.coreservice.domain.Follow;
 import com.instapic.coreservice.domain.UserInfo;
 import com.instapic.coreservice.dto.response.user.UserPreviewResponseDto;
-import com.instapic.coreservice.repository.FollowRepository;
-import com.instapic.coreservice.repository.UserInfoRepository;
+import com.instapic.coreservice.repository.follow.FollowRepository;
+import com.instapic.coreservice.repository.user.UserInfoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

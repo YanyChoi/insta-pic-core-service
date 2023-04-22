@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,27 +36,27 @@ public class ArticleController {
     }
 
     @GetMapping("/user/{userId}/feed")
-    public ResponseEntity<List<ArticleDetailResponseDto>> getArticleFeed(@PathVariable Long userId, @RequestParam Long lastArticleId, @RequestParam int size) {
+    public ResponseEntity<List<ArticleDetailResponseDto>> getArticleFeed(@PathVariable Long userId, @RequestParam(required = false) Optional<Long> lastArticleId, @RequestParam int size) {
         return ResponseEntity.ok().body(articleService.getFeedArticles(userId, lastArticleId, size));
     }
 
     @GetMapping("/user/{userId}/articles")
-    public ResponseEntity<List<ArticlePreviewResponseDto>> getUserArticles(@PathVariable Long userId, @RequestParam Long lastArticleId, @RequestParam int size) {
+    public ResponseEntity<List<ArticlePreviewResponseDto>> getUserArticles(@PathVariable Long userId, @RequestParam(required = false) Optional<Long> lastArticleId, @RequestParam int size) {
         return ResponseEntity.ok().body(articleService.getUserArticles(userId, lastArticleId, size));
     }
 
     @GetMapping("/location/{location}/articles")
-    public ResponseEntity<List<ArticlePreviewResponseDto>> getLocationArticles(@PathVariable String location, @RequestParam Long lastArticleId, @RequestParam int size) {
+    public ResponseEntity<List<ArticlePreviewResponseDto>> getLocationArticles(@PathVariable String location, @RequestParam(required = false) Optional<Long> lastArticleId, @RequestParam int size) {
         return ResponseEntity.ok().body(articleService.getLocationArticles(location, lastArticleId, size));
     }
 
     @GetMapping("/article/{articleId}/likes")
-    public ResponseEntity<List<UserPreviewResponseDto>> getArticleLikeUsers(@PathVariable Long articleId, @RequestParam Long lastUserId, @RequestParam int size) {
+    public ResponseEntity<List<UserPreviewResponseDto>> getArticleLikeUsers(@PathVariable Long articleId, @RequestParam(required = false) Optional<Long> lastUserId, @RequestParam int size) {
         return ResponseEntity.ok().body(articleService.getArticleLikes(articleId, lastUserId, size));
     }
 
     @PostMapping("/article/{articleId}/like")
-    public ResponseEntity<Void> postArticleLike(@PathVariable Long articleId, @RequestParam Long userId) {
+    public ResponseEntity<Void> postArticleLike(@PathVariable Long articleId, @RequestParam Long userId) throws Exception {
         articleService.createArticleLike(articleId, userId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }

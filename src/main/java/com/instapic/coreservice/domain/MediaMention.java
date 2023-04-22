@@ -1,5 +1,6 @@
 package com.instapic.coreservice.domain;
 
+import com.instapic.coreservice.dto.response.media.MediaMentionResponseDto;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -32,5 +33,17 @@ public class MediaMention extends BaseEntity {
         this.user = user;
         this.xPosition = xPosition;
         this.yPosition = yPosition;
+    }
+
+    public MediaMentionResponseDto toDto() {
+        return MediaMentionResponseDto.builder()
+                .mediaMentionId(mediaMentionId)
+                .userId(user.getUserId())
+                .username(user.getUserName())
+                .xPosition(xPosition)
+                .yPosition(yPosition)
+                .createdAt(getCreatedAt().toString())
+                .updatedAt(getUpdatedAt().toString())
+                .build();
     }
 }

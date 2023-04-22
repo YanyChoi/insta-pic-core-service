@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter @Setter @Builder
 public class MediaResponseDto {
@@ -13,6 +14,7 @@ public class MediaResponseDto {
     private String url;
     private String thumbnail;
     private MediaFormat mediaFormat;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private List<MediaMentionResponseDto> mentions;
+    private String createdAt;
+    private String updatedAt;
 }
