@@ -46,7 +46,7 @@ public class MediaService {
         String url = amazonS3Repository.uploadObject(file, FileType.MEDIA);
         Article article = articleRepository.findById(articleId).orElseThrow(() -> new NoSuchElementException("No such article with ID " + articleId));
         Media media = Media.builder()
-                .url(mediaBucketUrl + "/" + mediaDto.getMediaFormat() + "/" + url)
+                .url(mediaBucketUrl + "/" + FileType.MEDIA + "/" + url)
                 .mediaFormat(mediaDto.getMediaFormat())
                 .article(article)
                 .thumbnail(thumbnailBucketUrl + "/" + mediaDto)

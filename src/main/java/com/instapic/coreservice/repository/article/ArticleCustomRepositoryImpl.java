@@ -28,14 +28,15 @@ public class ArticleCustomRepositoryImpl implements ArticleCustomRepository {
 
         if (lastArticleId.isPresent()) {
             return jpaQueryFactory.selectDistinct(article)
-                    .from(follow)
-                    .leftJoin(follow.user, userInfo)
-                    .leftJoin(follow.user.articles, article)
-                    .leftJoin(follow.target.articles, article)
-                    .leftJoin(article.mediaList, media)
-                    .where(userInfo.userId.eq(userId))
-                    .where(article.articleId.gt(lastArticleId.get()))
-                    .limit(size)
+                    .from(article)
+                    .where(article.author.in(
+                                    jpaQueryFactory.selectDistinct(userInfo)
+                                            .from(follow)
+                                            .join(follow.target, userInfo)
+                                            .where(follow.user.userId.eq(userId))
+                            )
+                            .or(article.author.userId.eq(userId))
+                            .and(article.articleId.gt(lastArticleId.get())))
                     .fetch();
         }
         return jpaQueryFactory.selectDistinct(article)

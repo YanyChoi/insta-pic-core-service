@@ -31,6 +31,7 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 @PropertySource("aws.yaml")
 public class UserService {
@@ -46,7 +47,6 @@ public class UserService {
     @Value("${MEDIA_BUCKET_URL}")
     private String mediaBucketUrl;
 
-    @Transactional
     public TokenResponseDto login(String username, String password) {
         System.out.println("start login");
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(username, password);
@@ -54,8 +54,28 @@ public class UserService {
         return jwtTokenProvider.generateToken(authentication);
     }
 
-    public UserDetailResponseDto getUserDetails(Long userId) throws NoSuchElementException {
-        UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
+    public UserDetailResponseDto getUserDetailsById(Long userId) throws NoSuchElementException {
+        UserInfo userInfo = userInfoRepository.findById(userId)
+                .orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
+        int followingCount = followRepository.countByUser(userInfo);
+        int followedByCount = followRepository.countByTarget(userInfo);
+        return UserDetailResponseDto.builder()
+                .userId(userInfo.getUserId())
+                .userName(userInfo.getUserName())
+                .fullName(userInfo.getFullName())
+                .profilePictureUrl(userInfo.getProfilePictureUrl())
+                .url(userInfo.getUrl())
+                .bio(userInfo.getBio())
+                .followingCount(followingCount)
+                .followedByCount(followedByCount)
+                .createdAt(userInfo.getCreatedAt().toString())
+                .updatedAt(userInfo.getUpdatedAt().toString())
+                .build();
+    }
+
+    public UserDetailResponseDto getUserDetailByUsername(String username) throws NoSuchElementException {
+        UserInfo userInfo = userInfoRepository.findByUserName(username)
+                .orElseThrow(() -> new NoSuchElementException("No such user with username " + username));
         int followingCount = followRepository.countByUser(userInfo);
         int followedByCount = followRepository.countByTarget(userInfo);
         return UserDetailResponseDto.builder()
@@ -90,7 +110,6 @@ public class UserService {
         return user.getId();
     }
 
-    @Transactional
     public void updateUser(Long userId, UserPatchRequestDto dto, Optional<MultipartFile> profilePicture) throws IOException {
         UserInfo userInfo = userInfoRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("No such user with ID " + userId));
         if (dto.getBio().isPresent()) {

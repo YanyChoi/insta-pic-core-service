@@ -10,5 +10,5 @@ public interface FollowCustomRepository {
     void deleteByUserIdAndTargetId(Long userId, Long targetId);
     List<UserInfo> findTargetsByUserId(Long userId, Optional<Long> lastUserId, int size);
     List<UserInfo> findUsersByTargetId(Long targetId, Optional<Long> lastUserId, int size);
-    List<UserInfo> findMutualFollowers(Long userId, Long targetId, Optional<Long> lastUserId, int size);
+    List<UserInfo> findMutualFollowers(String username, Long targetId, Optional<Long> lastUserId, int size);
 }

@@ -62,6 +62,7 @@ public class Article extends BaseEntity {
                 .author(author.toPreviewDto())
                 .likeCount(likeCount)
                 .commentCount(commentCount)
+                .thumbnail(mediaList.get(0).getUrl())
                 .createdAt(getCreatedAt().toString())
                 .updatedAt(getUpdatedAt().toString())
                 .build();

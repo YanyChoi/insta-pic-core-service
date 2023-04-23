@@ -43,8 +43,8 @@ public class FollowService {
         return followRepository.findUsersByTargetId(targetId, lastUserId, size).stream().map(UserInfo::toPreviewDto).toList();
     }
 
-    public List<UserPreviewResponseDto> getMutualFollowerList(Long userId, Long targetId, Optional<Long> lastUserId, int size) {
-        return followRepository.findMutualFollowers(userId, targetId, lastUserId, size).stream().map(UserInfo::toPreviewDto).toList();
+    public List<UserPreviewResponseDto> getMutualFollowerList(String username, Long targetId, Optional<Long> lastUserId, int size) {
+        return followRepository.findMutualFollowers(username, targetId, lastUserId, size).stream().map(UserInfo::toPreviewDto).toList();
     }
 
 }
