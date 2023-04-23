@@ -13,6 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsUtils;
 
 
 @Configuration
@@ -30,20 +31,27 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http
-                .httpBasic().disable()
                 .csrf().disable()
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
-                .and()
-                .authorizeRequests()
-                .antMatchers("/authenticate").permitAll()
-                .antMatchers("/login").permitAll()
-                .anyRequest().authenticated()
-
                 .and()
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .httpBasic()
+                .and()
+                .authorizeRequests()
+                .requestMatchers(request -> CorsUtils.isPreFlightRequest(request)).permitAll()
+                .antMatchers("/authenticate").permitAll()
+                .antMatchers("/error").permitAll()
+                .antMatchers("/login").permitAll()
+                .antMatchers("/signup").permitAll()
+                .antMatchers("/v3/api-docs").permitAll()
+                .antMatchers("/swagger*/**").permitAll()
+                .antMatchers("/health").permitAll()
+                .anyRequest().authenticated()
+                .and()
 
                 .build();
     }
+
+
 }
